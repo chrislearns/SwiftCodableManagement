@@ -154,23 +154,6 @@ public class CachingService: ObservableObject {
     
 }
 
-public struct CacheNameConstructor{
-    public init(prefix: CachePrefix, suffix: CacheSuffix, uniqueIdentifier: String? = nil) {
-        self.prefix = prefix
-        self.suffix = suffix
-        self.uniqueIdentifier = uniqueIdentifier
-    }
-    public var prefix:CachePrefix
-    public var suffix:CacheSuffix
-    
-    public var uniqueIdentifier:String?
-    
-    public var constructedCacheName:String{
-        return prefix.rawValue
-            + (uniqueIdentifier == nil ? "" : "_") + (uniqueIdentifier ?? "")
-            + suffix.rawValue
-    }
-}
 
 
 public enum CachePrefix:String{
@@ -209,35 +192,5 @@ public enum CacheRecency:Int {
     }
 }
 
-public enum GeneralOutcomes {
-    case success
-    case error
-    case ambiguous
-}
 
-public extension Data {
-    init(reading input: InputStream) throws {
-        self.init()
-        input.open()
-        defer {
-            input.close()
-        }
-        
-        let bufferSize = 1024
-        let buffer = UnsafeMutablePointer<UInt8>.allocate(capacity: bufferSize)
-        defer {
-            buffer.deallocate()
-        }
-        while input.hasBytesAvailable {
-            let read = input.read(buffer, maxLength: bufferSize)
-            if read < 0 {
-                //Stream error occured
-                throw input.streamError!
-            } else if read == 0 {
-                //EOF
-                break
-            }
-            self.append(buffer, count: read)
-        }
-    }
-}
+

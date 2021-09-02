@@ -9,27 +9,9 @@ import SwiftUI
 import Alamofire
 
 public class NetworkingService: ObservableObject {
-//    static func get(_ url:String, completion: @escaping (Data?)->()){
-//        print("submitting get")
-//        let urlRequest = URLRequest(url: URL(string: url)!)
-//        URLCache.shared.removeCachedResponse(for: urlRequest)
-//
-//
-//        let request = AF.request(url)
-//        // 2
-//        request.responseJSON { (data) in
-//            //            print(data)
-//            if let data = data.data{
-//                print("get completed")
-//                completion(data)
-//            }
-//        }
-//        completion(nil)
-//
-//    }
-    
     
     public init(){}
+    
     static func getToObject<T>(
         _ url:String,
         type:T.Type,
@@ -67,22 +49,3 @@ public class NetworkingService: ObservableObject {
     
 }
 
-public class APIURLConstructor{
-    public init(
-        constructorPathItems:[String]
-    ){
-        self.constructorPathItems = constructorPathItems
-    }
-    public var root = "https://chrisguirguis.com/revenitedummyapi/"
-    public var constructorPathItems:[String]
-    
-    public func path(_ itemID:String) -> String{
-        root + constructorPathItems.map{$0}.joined() + itemID
-    }
-}
-
-public enum APIPathComponents:String {
-    case user = "user/"
-    case image = "image/"
-    case recoveryProtocol = "recoveryprotocol/"
-}
