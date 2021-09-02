@@ -132,7 +132,7 @@ public class CachingService: ObservableObject {
     }
     
     public static func saveDataToCache(data:Data, pathConstructor:CacheNameConstructor, completion: (GeneralOutcomes) -> ()){
-        print("attempting to cache \(pathConstructor.prefix.rawValue)")
+        print("attempting to cache \(pathConstructor.prefix)")
         guard let cacheURL = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first else { return }
         
         let fileUrl = cacheURL.appendingPathComponent("\(pathConstructor.constructedCacheName)")
@@ -144,10 +144,25 @@ public class CachingService: ObservableObject {
         }
     }
     
-    public static func saveImageToCache(image: UIImage, identifier:UUID, completion: (GeneralOutcomes) -> ()){
+    public static func saveImageToCache(
+        image: UIImage,
+        identifier:UUID,
+        prefix: String? = nil,
+        suffix: String? = nil,
+        completion: (GeneralOutcomes) -> ()
+    ){
         if let data = image.pngData() {
-            let constructor = CacheNameConstructor(prefix: .image, suffix: .png, uniqueIdentifier: identifier.uuidString)
-            saveDataToCache(data: data, pathConstructor: constructor, completion: completion)
+            let constructor = CacheNameConstructor(
+                prefix: prefix ?? ".image",
+                suffix: suffix ?? ".png",
+                uniqueIdentifier: identifier.uuidString
+            )
+            
+            saveDataToCache(
+                data: data,
+                pathConstructor: constructor,
+                completion: completion
+            )
         }
     }
     
