@@ -1,19 +1,19 @@
 import SwiftUI
 
 //This struct is critical to flexible de-nesting of codable objects that may need to be flexibly decoded due to patterns of superclass -> subclass inheritance
-struct AnyCodingKey: CodingKey {
-    var stringValue: String
-    var intValue: Int?
+public struct AnyCodingKey: CodingKey {
+    public var stringValue: String
+    public var intValue: Int?
     
-    init(_ string: String) {
+    public init(_ string: String) {
         stringValue = string
     }
     
-    init?(stringValue: String) {
+    public init?(stringValue: String) {
         self.stringValue = stringValue
     }
     
-    init?(intValue: Int) {
+    public init?(intValue: Int) {
         self.intValue = intValue
         self.stringValue = String(intValue)
     }

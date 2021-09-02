@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-class EncodingService:ObservableObject {
+public class EncodingService:ObservableObject {
     
     //Example of use: EncodingService.encode(dummyMattUser)
     static func encode<T:Encodable>(_ object: T) -> Data?{

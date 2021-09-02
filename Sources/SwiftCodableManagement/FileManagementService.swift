@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-class FileManagementService: ObservableObject {
+public class FileManagementService: ObservableObject {
     enum SubfolderPaths: String {
         case sequences = "/sequences"
     }
@@ -88,7 +88,10 @@ class FileManagementService: ObservableObject {
         
     }
     
-    static func enumerateFilesInFolder(for directory: FileManager.SearchPathDirectory, subfolder: [FileManagementService.SubfolderPaths] = [], skipsHiddenFiles: Bool = true ) -> [URL]? {
+    static func enumerateFilesInFolder(
+        for directory: FileManager.SearchPathDirectory,
+        subfolder: [FileManagementService.SubfolderPaths] = [],
+        skipsHiddenFiles: Bool = true ) -> [URL]? {
         let documentsURL = FileManager.default.urls(for: directory, in: .userDomainMask)[0].appendingPathComponent(subfolder.map{$0.rawValue}.joined())
         let fileURLs = try? FileManager.default.contentsOfDirectory(at: documentsURL, includingPropertiesForKeys: nil, options: skipsHiddenFiles ? .skipsHiddenFiles : [])
         return fileURLs
@@ -98,11 +101,11 @@ class FileManagementService: ObservableObject {
         if !FileManager.default.fileExists(atPath: subfolder) {
             do{
                 try FileManager.default.createDirectory(atPath: subfolder, withIntermediateDirectories: true, attributes: nil)
-                    }
-             catch (let error){
-                   print("Failed to create Directory: \(error.localizedDescription)")
-             }
+            }
+            catch (let error){
+                print("Failed to create Directory: \(error.localizedDescription)")
+            }
         }
-
+        
     }
 }

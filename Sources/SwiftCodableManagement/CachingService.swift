@@ -8,7 +8,7 @@
 import SwiftUI
 
 
-class CachingService: ObservableObject {
+public class CachingService: ObservableObject {
     static func saveObjectToCache<T:Encodable>(
         object:T,
         filenameConstructor:CacheNameConstructor,
@@ -154,7 +154,7 @@ class CachingService: ObservableObject {
     
 }
 
-struct CacheNameConstructor{
+public struct CacheNameConstructor{
     var prefix:CachePrefix
     var suffix:CacheSuffix
     
@@ -168,7 +168,7 @@ struct CacheNameConstructor{
 }
 
 
-enum CachePrefix:String{
+public enum CachePrefix:String{
     case patient
     case recoveryProtocol
     case megaStructure
@@ -176,13 +176,13 @@ enum CachePrefix:String{
     case obj
 }
 
-enum CacheSuffix:String{
+public enum CacheSuffix:String{
     case json = ".json"
     case none = ""
     case png = ".png"
 }
 
-enum CacheRecency:Int {
+public enum CacheRecency:Int {
     case minute = 60
     case minute5 = 300
     case minute15 = 900
@@ -204,18 +204,13 @@ enum CacheRecency:Int {
     }
 }
 
-
-
-
-
-enum GeneralOutcomes {
+public enum GeneralOutcomes {
     case success
     case error
     case ambiguous
 }
 
-
-extension Data {
+public extension Data {
     init(reading input: InputStream) throws {
         self.init()
         input.open()

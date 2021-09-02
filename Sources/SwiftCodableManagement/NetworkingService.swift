@@ -8,7 +8,7 @@
 import SwiftUI
 import Alamofire
 
-class NetworkingService: ObservableObject {
+public class NetworkingService: ObservableObject {
 //    static func get(_ url:String, completion: @escaping (Data?)->()){
 //        print("submitting get")
 //        let urlRequest = URLRequest(url: URL(string: url)!)
@@ -65,21 +65,21 @@ class NetworkingService: ObservableObject {
     
 }
 
-class APIURLConstructor{
+public class APIURLConstructor{
     init(
-        constructorPathItems:[APIPathComponents]
+        constructorPathItems:[String]
     ){
         self.constructorPathItems = constructorPathItems
     }
     var root = "https://chrisguirguis.com/revenitedummyapi/"
-    var constructorPathItems:[APIPathComponents]
+    var constructorPathItems:[String]
     
     func path(_ itemID:String) -> String{
-        root + constructorPathItems.map{$0.rawValue}.joined() + itemID
+        root + constructorPathItems.map{$0}.joined() + itemID
     }
 }
 
-enum APIPathComponents:String {
+public enum APIPathComponents:String {
     case user = "user/"
     case image = "image/"
     case recoveryProtocol = "recoveryprotocol/"

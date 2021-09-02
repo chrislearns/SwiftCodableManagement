@@ -7,14 +7,14 @@
 
 import SwiftUI
 
-extension UnkeyedDecodingContainer {
+public extension UnkeyedDecodingContainer {
     mutating func decodeNested<T>(_ type: T.Type, keyString: String) throws -> T where T : Decodable {
         let nestedContainer = try self.nestedContainer(keyedBy: AnyCodingKey.self)
         return try nestedContainer.decode(T.self, forKey: .init(keyString))
     }
 }
 
-func decodeNestedHeterogenousArray<U:InheritanceDecodeTypable>(container: KeyedDecodingContainer<AnyCodingKey>, forKey: AnyCodingKey, heterogenousSuperType:U.Type) -> [U.T] {
+public func decodeNestedHeterogenousArray<U:InheritanceDecodeTypable>(container: KeyedDecodingContainer<AnyCodingKey>, forKey: AnyCodingKey, heterogenousSuperType:U.Type) -> [U.T] {
     do {
         var encodedHeterogenousArray = try container.nestedUnkeyedContainer(forKey: forKey)
         var copiedArray = encodedHeterogenousArray
@@ -34,7 +34,7 @@ func decodeNestedHeterogenousArray<U:InheritanceDecodeTypable>(container: KeyedD
     }
 }
 
-func decodeNestedHeterogenousObject<U:InheritanceDecodeTypable>(container: KeyedDecodingContainer<AnyCodingKey>, forKey: AnyCodingKey, heterogenousSuperType:U.Type) throws -> U.T {
+public func decodeNestedHeterogenousObject<U:InheritanceDecodeTypable>(container: KeyedDecodingContainer<AnyCodingKey>, forKey: AnyCodingKey, heterogenousSuperType:U.Type) throws -> U.T {
     _ = UUID().uuidString.prefix(4)
 //    print("decoding nested object -> \(heterogenousSuperType.codedKey()) + \(uniqueRoundID)")
 //    print("Looking for object at key -> \(forKey.stringValue) + \(uniqueRoundID)")
@@ -59,26 +59,26 @@ func decodeNestedHeterogenousObject<U:InheritanceDecodeTypable>(container: Keyed
 }
 
 
-protocol InheritanceDecodeTypable:Decodable {
+public protocol InheritanceDecodeTypable:Decodable {
     associatedtype T:Decodable
     func toType() -> T.Type
     static func codedKey() -> String
 }
 
 //This protocol requires the presence of a CacheNameConstructor which allows for easy generation of the constructed cache name via a computed variable
-protocol CacheConstructorReversible:Codable {
+public protocol CacheConstructorReversible:Codable {
     var cacheNameConstructor:CacheNameConstructor { get }
 }
 
 //This is a convenience protocol that should be adhered to for every struct/class that needs to load from the internet or get cached. It ensures that there is convenience constructor for the CacheName and the APIURL as well as a value for the last time the object was cached
-protocol GettableByUUID{
+public protocol GettableByUUID{
     associatedtype T:CacheConstructorReversible
     var filenameConstructor: CacheNameConstructor { get }
     var apiUrlConstructor: APIURLConstructor { get }
     var lastCached:Date? { get set }
 }
 
-extension GettableByUUID {
+public extension GettableByUUID {
     func getFromNetwork(
         uuid:String,
         customApiUrlConstructor: APIURLConstructor?,
@@ -95,7 +95,7 @@ extension GettableByUUID {
         }
     }
     
-    static func getFromNetwork(
+    public static func getFromNetwork(
         uuid:String,
         customApiUrlConstructor: APIURLConstructor,
         completion: @escaping (T?) -> ()
@@ -112,7 +112,7 @@ extension GettableByUUID {
         }
     }
     
-    func getFromCache(
+    public func getFromCache(
         uuid:String,
         requiredCacheRecency: CacheRecency,
         customFilenameConstructor: CacheNameConstructor?,
@@ -127,7 +127,7 @@ extension GettableByUUID {
         }
     }
     
-    static func getFromCache(
+    public static func getFromCache(
         uuid:String,
         requiredCacheRecency: CacheRecency,
         customFilenameConstructor: CacheNameConstructor,
@@ -142,7 +142,7 @@ extension GettableByUUID {
         }
     }
     
-    func get(
+    public func get(
         uuid:String,
         desiredCacheRecency: CacheRecency,
         forceNetworkGrab:Bool = false,
@@ -182,7 +182,7 @@ extension GettableByUUID {
         }
     }
     
-    static func get(
+    public static func get(
         uuid:String,
         desiredCacheRecency: CacheRecency,
         forceNetworkGrab:Bool,
