@@ -155,6 +155,11 @@ public class CachingService: ObservableObject {
 }
 
 public struct CacheNameConstructor{
+    public init(prefix: CachePrefix, suffix: CacheSuffix, uniqueIdentifier: String? = nil) {
+        self.prefix = prefix
+        self.suffix = suffix
+        self.uniqueIdentifier = uniqueIdentifier
+    }
     public var prefix:CachePrefix
     public var suffix:CacheSuffix
     
