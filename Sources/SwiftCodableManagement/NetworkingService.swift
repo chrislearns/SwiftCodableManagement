@@ -28,6 +28,8 @@ public class NetworkingService: ObservableObject {
 //
 //    }
     
+    
+    public init(){}
     static func getToObject<T>(
         _ url:String,
         type:T.Type,
