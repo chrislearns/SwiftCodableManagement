@@ -95,7 +95,7 @@ public extension GettableByUUID {
         }
     }
     
-    public static func getFromNetwork(
+    static func getFromNetwork(
         uuid:String,
         customApiUrlConstructor: APIURLConstructor,
         completion: @escaping (T?) -> ()
@@ -112,7 +112,7 @@ public extension GettableByUUID {
         }
     }
     
-    public func getFromCache(
+    func getFromCache(
         uuid:String,
         requiredCacheRecency: CacheRecency,
         customFilenameConstructor: CacheNameConstructor?,
@@ -127,7 +127,7 @@ public extension GettableByUUID {
         }
     }
     
-    public static func getFromCache(
+    static func getFromCache(
         uuid:String,
         requiredCacheRecency: CacheRecency,
         customFilenameConstructor: CacheNameConstructor,
@@ -142,7 +142,7 @@ public extension GettableByUUID {
         }
     }
     
-    public func get(
+    func get(
         uuid:String,
         desiredCacheRecency: CacheRecency,
         forceNetworkGrab:Bool = false,
@@ -182,7 +182,7 @@ public extension GettableByUUID {
         }
     }
     
-    public static func get(
+    static func get(
         uuid:String,
         desiredCacheRecency: CacheRecency,
         forceNetworkGrab:Bool,

@@ -8,11 +8,11 @@
 import SwiftUI
 
 public class FileManagementService: ObservableObject {
-    enum SubfolderPaths: String {
+    public enum SubfolderPaths: String {
         case sequences = "/sequences"
     }
     
-    static func saveObjectToDisc<T:Encodable>(
+    public static func saveObjectToDisc<T:Encodable>(
         object:T,
         filename:String,
         directory: FileManager.SearchPathDirectory = .documentDirectory,
@@ -38,7 +38,7 @@ public class FileManagementService: ObservableObject {
         return nil
     }
     
-    static func retrieveObjectFromDisc(
+    public static func retrieveObjectFromDisc(
         filename:String,
         directory: FileManager.SearchPathDirectory = .documentDirectory,
         subfolder: [SubfolderPaths] = []
@@ -67,7 +67,7 @@ public class FileManagementService: ObservableObject {
         
     }
     
-    static func retrieveObjectFromDisc(url: URL) -> Data? {
+    public static func retrieveObjectFromDisc(url: URL) -> Data? {
         do {
             //Try to check for this files attributes
             guard let stream = InputStream(url: url) else {return nil}
@@ -88,7 +88,7 @@ public class FileManagementService: ObservableObject {
         
     }
     
-    static func enumerateFilesInFolder(
+    public static func enumerateFilesInFolder(
         for directory: FileManager.SearchPathDirectory,
         subfolder: [FileManagementService.SubfolderPaths] = [],
         skipsHiddenFiles: Bool = true ) -> [URL]? {
@@ -97,7 +97,7 @@ public class FileManagementService: ObservableObject {
         return fileURLs
     }
     
-    static func createSubfolder(subfolder: String){
+    public static func createSubfolder(subfolder: String){
         if !FileManager.default.fileExists(atPath: subfolder) {
             do{
                 try FileManager.default.createDirectory(atPath: subfolder, withIntermediateDirectories: true, attributes: nil)

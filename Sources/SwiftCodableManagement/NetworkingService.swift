@@ -66,15 +66,15 @@ public class NetworkingService: ObservableObject {
 }
 
 public class APIURLConstructor{
-    init(
+    public init(
         constructorPathItems:[String]
     ){
         self.constructorPathItems = constructorPathItems
     }
-    var root = "https://chrisguirguis.com/revenitedummyapi/"
-    var constructorPathItems:[String]
+    public var root = "https://chrisguirguis.com/revenitedummyapi/"
+    public var constructorPathItems:[String]
     
-    func path(_ itemID:String) -> String{
+    public func path(_ itemID:String) -> String{
         root + constructorPathItems.map{$0}.joined() + itemID
     }
 }

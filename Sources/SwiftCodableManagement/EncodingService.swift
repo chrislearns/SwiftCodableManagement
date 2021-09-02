@@ -10,7 +10,7 @@ import SwiftUI
 public class EncodingService:ObservableObject {
     
     //Example of use: EncodingService.encode(dummyMattUser)
-    static func encode<T:Encodable>(_ object: T) -> Data?{
+    public static func encode<T:Encodable>(_ object: T) -> Data?{
         let encoder = JSONEncoder()
         do {
             let encodedObject = try encoder.encode(object)
@@ -22,7 +22,7 @@ public class EncodingService:ObservableObject {
         return nil
     }
 
-    static func decodeData<T>(_ data:Data, type:T.Type) -> T? where T: Decodable{
+    public static func decodeData<T>(_ data:Data, type:T.Type) -> T? where T: Decodable{
         print("decoding -> \(type.self)")
         
         let decoder = JSONDecoder()

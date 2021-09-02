@@ -9,7 +9,7 @@ import SwiftUI
 
 
 public class CachingService: ObservableObject {
-    static func saveObjectToCache<T:Encodable>(
+    public static func saveObjectToCache<T:Encodable>(
         object:T,
         filenameConstructor:CacheNameConstructor,
         directory: FileManager.SearchPathDirectory = .documentDirectory,
@@ -23,7 +23,7 @@ public class CachingService: ObservableObject {
         )
     }
     
-    static func retrieveFromCache(
+    public static func retrieveFromCache(
         filenameConstructor:CacheNameConstructor,
         requiredCacheRecency:CacheRecency
     ) -> (
@@ -72,7 +72,7 @@ public class CachingService: ObservableObject {
         
     }
     
-    static func retrieveFromCacheToObject<T>(
+    public static func retrieveFromCacheToObject<T>(
         filenameConstructor:CacheNameConstructor,
         type:T.Type,
         requiredCacheRecency:CacheRecency,
@@ -101,7 +101,7 @@ public class CachingService: ObservableObject {
         
     }
     
-    static func wipeDocumentsDirectory(pathExtension: String? = nil) {
+    public static func wipeDocumentsDirectory(pathExtension: String? = nil) {
         if let documentsUrl =  FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first{
             do {
                 let fileURLs = try FileManager.default.contentsOfDirectory(at: documentsUrl,
@@ -131,7 +131,7 @@ public class CachingService: ObservableObject {
 
     }
     
-    static func saveDataToCache(data:Data, pathConstructor:CacheNameConstructor, completion: (GeneralOutcomes) -> ()){
+    public static func saveDataToCache(data:Data, pathConstructor:CacheNameConstructor, completion: (GeneralOutcomes) -> ()){
         print("attempting to cache \(pathConstructor.prefix.rawValue)")
         guard let cacheURL = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first else { return }
         
@@ -144,7 +144,7 @@ public class CachingService: ObservableObject {
         }
     }
     
-    static func saveImageToCache(image: UIImage, identifier:UUID, completion: (GeneralOutcomes) -> ()){
+    public static func saveImageToCache(image: UIImage, identifier:UUID, completion: (GeneralOutcomes) -> ()){
         if let data = image.pngData() {
             let constructor = CacheNameConstructor(prefix: .image, suffix: .png, uniqueIdentifier: identifier.uuidString)
             saveDataToCache(data: data, pathConstructor: constructor, completion: completion)
@@ -155,12 +155,12 @@ public class CachingService: ObservableObject {
 }
 
 public struct CacheNameConstructor{
-    var prefix:CachePrefix
-    var suffix:CacheSuffix
+    public var prefix:CachePrefix
+    public var suffix:CacheSuffix
     
-    var uniqueIdentifier:String?
+    public var uniqueIdentifier:String?
     
-    var constructedCacheName:String{
+    public var constructedCacheName:String{
         return prefix.rawValue
             + (uniqueIdentifier == nil ? "" : "_") + (uniqueIdentifier ?? "")
             + suffix.rawValue
@@ -196,7 +196,7 @@ public enum CacheRecency:Int {
     case week = 604800
     case infinity = 9999999999
     
-    func comparedTimeIsExpired(_ comparedTime: TimeInterval) -> Bool{
+    public func comparedTimeIsExpired(_ comparedTime: TimeInterval) -> Bool{
         let desiredCacheTime = self.rawValue
         let comparedTime = Int(comparedTime)
         
