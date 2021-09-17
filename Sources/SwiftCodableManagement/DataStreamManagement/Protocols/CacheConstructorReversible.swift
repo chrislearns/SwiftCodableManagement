@@ -9,5 +9,14 @@ import SwiftUI
 
 //This protocol requires the presence of a CacheNameConstructor which allows for easy generation of the constructed cache name via a computed variable
 public protocol CacheConstructorReversible:Codable {
-    var cacheNameConstructor:CacheNameConstructor { get }
+    var id: UUID?
+    
+    static var cachePrefix: String { get }
+    static var cacheSuffix: String { get }
+}
+
+extension CacheConstructorReversible {
+    var cacheNameConstructor:CacheNameConstructor {
+        .init(prefix: Self.cachePrefix, suffix: Self.cacheSuffix, uniqueIdentifier: id?.uuidString)
+    }
 }

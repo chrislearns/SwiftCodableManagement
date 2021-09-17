@@ -18,7 +18,7 @@ public class NetworkingService: ObservableObject {
         cache:Bool,
         completion: @escaping (T?)->(),
         headerValues:[String:String] = [:],
-        method: SCMHTTPMethod = .post
+        method: SCMHTTPMethod = .get
     ) where T: CacheConstructorReversible {
         print("submitting get")
         print("type: \(type.self)")
