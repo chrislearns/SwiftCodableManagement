@@ -16,18 +16,24 @@ public class NetworkingService: ObservableObject {
         _ url:String,
         type:T.Type,
         cache:Bool,
-        completion: @escaping (T?)->()
+        completion: @escaping (T?)->(),
+        headerValues:[String:String] = [:],
+        method: SCMHTTPMethod = .post
     ) where T: CacheConstructorReversible {
         print("submitting get")
         print("type: \(type.self)")
         print("url: \(url)")
         URLCache.shared.removeAllCachedResponses()
-        let urlRequest = URLRequest(url: URL(string: url)!)
+        var urlRequest = URLRequest(url: URL(string: url)!)
+        for val in headerValues {
+            urlRequest.addValue(val.value, forHTTPHeaderField: val.key)
+        }
         URLCache.shared.removeCachedResponse(for: urlRequest)
+        urlRequest.httpMethod = method.rawValue
         
-        
-        let request = AF.request(url)
+        let request = AF.request(urlRequest)
         // 2
+        
         request.responseJSON { (data) in
             
             guard let data = data.data else {
