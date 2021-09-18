@@ -8,9 +8,8 @@
 import SwiftUI
 
 //This is a convenience protocol that should be adhered to for every struct/class that needs to load from the internet or get cached. It ensures that there is convenience constructor for the CacheName and the APIURL as well as a value for the last time the object was cached
-public protocol GettableByUUID{
+public protocol GettableByUUID: CacheConstructorReversible{
     associatedtype T:CacheConstructorReversible
-    var filenameConstructor: CacheNameConstructor { get }
     var apiUrlConstructor: APIURLConstructor { get }
     var lastCached:Date? { get set }
 }
@@ -54,8 +53,8 @@ public extension GettableByUUID {
         requiredCacheRecency: CacheRecency,
         customFilenameConstructor: CacheNameConstructor?,
         completion: @escaping ((object: T, cacheReturn: (metRecencyRequirement: Bool, recency: TimeInterval, cacheDate: Date))?)->()){
-        let cacheNameConstructor = customFilenameConstructor ?? self.filenameConstructor
-        CachingService.retrieveFromCacheToObject(filenameConstructor: cacheNameConstructor, type: T.self, requiredCacheRecency: requiredCacheRecency){item in
+        let thisCacheNameConstructor = customFilenameConstructor ?? self.cacheNameConstructor
+        CachingService.retrieveFromCacheToObject(filenameConstructor: thisCacheNameConstructor, type: T.self, requiredCacheRecency: requiredCacheRecency){item in
             guard let item = item else {
                 completion(nil)
                 return
