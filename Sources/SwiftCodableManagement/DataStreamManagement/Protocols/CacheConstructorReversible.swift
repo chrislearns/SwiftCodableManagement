@@ -17,6 +17,6 @@ public protocol CacheConstructorReversible:Codable {
 
 extension CacheConstructorReversible {
     public var cacheNameConstructor:CacheNameConstructor {
-        .init(prefix: Self.cachePrefix, suffix: Self.cacheSuffix, uniqueIdentifier: id?.uuidString)
+        .init(prefix: Self.cachePrefix, suffix: Self.cacheSuffix, uniqueIdentifier: id.uuidString)
     }
 }
