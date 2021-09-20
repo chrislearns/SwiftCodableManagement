@@ -9,7 +9,7 @@ import SwiftUI
 
 public class EncodingService:ObservableObject {
     
-    init(
+    public init(
         dateDecodingStrategy:JSONDecoder.DateDecodingStrategy = .iso8601,
         dataDecodingStrategy:JSONDecoder.DataDecodingStrategy = .base64,
         dateEncodingStrategy:JSONEncoder.DateEncodingStrategy = .iso8601,
