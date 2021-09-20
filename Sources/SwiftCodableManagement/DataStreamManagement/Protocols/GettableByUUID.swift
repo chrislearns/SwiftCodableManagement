@@ -36,7 +36,7 @@ public extension GettableByUUID {
         customApiUrlConstructor: APIURLConstructor,
         completion: @escaping (T?) -> ()
     ){
-        print("getFromNetwork - static")
+        print("getFromNetwork - static - \(T)")
         let endpoint:APIURLConstructor = customApiUrlConstructor
         
         NetworkingService.getToObject(endpoint.path(uuid), type: T.self, cache: true){item in
