@@ -32,7 +32,6 @@ public class EncodingService:ObservableObject {
     
     //Example of use: EncodingService.encode(dummyMattUser)
     public func encode<T:Encodable>(_ object: T) -> Data?{
-        let encoder = JSONEncoder()
         do {
             let encodedObject = try encoder.encode(object)
             return encodedObject
@@ -50,8 +49,6 @@ public class EncodingService:ObservableObject {
         dataDecodingStrategy: JSONDecoder.DataDecodingStrategy? = nil
     ) -> T? where T: Decodable{
         print("decoding -> \(type.self)")
-        
-        let decoder = JSONDecoder()
         do {
             let unwrap = try decoder.decode(T.self, from: data)
             print("object decoded")
