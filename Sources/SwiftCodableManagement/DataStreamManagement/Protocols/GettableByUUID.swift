@@ -21,7 +21,7 @@ public extension GettableByUUID {
         completion: @escaping (T?) -> ()
     ){
         let endpoint:APIURLConstructor = customApiUrlConstructor ?? self.apiUrlConstructor
-        print("getFromNetwork - dynamic")
+        print("getFromNetwork - dynamic - \(T.self)")
         NetworkingService.getToObject(endpoint.path(uuid), type: T.self, cache: true){item in
             guard let item = item else {
                 completion(nil)
@@ -36,7 +36,7 @@ public extension GettableByUUID {
         customApiUrlConstructor: APIURLConstructor,
         completion: @escaping (T?) -> ()
     ){
-        print("getFromNetwork - static - \(T)")
+        print("getFromNetwork - static - \(T.self)")
         let endpoint:APIURLConstructor = customApiUrlConstructor
         
         NetworkingService.getToObject(endpoint.path(uuid), type: T.self, cache: true){item in
@@ -85,7 +85,7 @@ public extension GettableByUUID {
         customFilenameConstructor: CacheNameConstructor? = nil,
         customApiUrlConstructor: APIURLConstructor? = nil,
         completion: @escaping ((item: T, interval: TimeInterval, cacheDate: Date)?) -> ()){
-        print("dynamic get")
+        print("dynamic get - \(T.self)")
         getFromCache(
             uuid: uuid,
             requiredCacheRecency: desiredCacheRecency,
@@ -125,7 +125,7 @@ public extension GettableByUUID {
         customFilenameConstructor: CacheNameConstructor,
         customApiUrlConstructor: APIURLConstructor,
         completion: @escaping ((item: T, interval: TimeInterval, cacheDate: Date)?) -> ()){
-        print("static get - \(T)")
+        print("static get - \(T.self)")
         getFromCache(
             uuid: uuid,
             requiredCacheRecency: desiredCacheRecency,
