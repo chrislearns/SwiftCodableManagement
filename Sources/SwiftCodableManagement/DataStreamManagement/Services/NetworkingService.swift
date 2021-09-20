@@ -16,9 +16,13 @@ public class NetworkingService: ObservableObject {
         _ url:String,
         type:T.Type,
         cache:Bool,
-        completion: @escaping (T?)->(),
+        encodingService: EncodingService?,
         headerValues:[String:String] = [:],
-        method: SCMHTTPMethod = .get
+        method: SCMHTTPMethod = .get,
+        completion: @escaping (T?)->()
+        
+        
+        
     ) where T: CacheConstructorReversible {
         print("submitting get")
         print("type: \(type.self)")
@@ -42,12 +46,12 @@ public class NetworkingService: ObservableObject {
             }
             print("get completed")
             
-            let returnedObject = EncodingService.decodeData(data, type: T.self)
+            let returnedObject = (encodingService ?? EncodingService()).decodeData(data, type: T.self)
             completion(returnedObject)
             
             print("completion handler executed")
             if cache, let decodedObject = returnedObject {
-                _ = CachingService.saveObjectToCache(object: returnedObject, filenameConstructor: decodedObject.cacheNameConstructor)
+                _ = CachingService.saveObjectToCache(object: returnedObject, filenameConstructor: decodedObject.cacheNameConstructor, encodingService: encodingService)
             }
         }
     }

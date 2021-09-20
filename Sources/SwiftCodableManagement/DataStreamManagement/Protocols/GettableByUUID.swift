@@ -18,11 +18,12 @@ public extension GettableByUUID {
     func getFromNetwork(
         uuid:String,
         customApiUrlConstructor: APIURLConstructor?,
+        encodingService: EncodingService?,
         completion: @escaping (T?) -> ()
     ){
         let endpoint:APIURLConstructor = customApiUrlConstructor ?? self.apiUrlConstructor
         print("getFromNetwork - dynamic - \(T.self)")
-        NetworkingService.getToObject(endpoint.path(uuid), type: T.self, cache: true){item in
+        NetworkingService.getToObject(endpoint.path(uuid), type: T.self, cache: true, encodingService: encodingService){item in
             guard let item = item else {
                 completion(nil)
                 return
@@ -34,12 +35,13 @@ public extension GettableByUUID {
     static func getFromNetwork(
         uuid:String,
         customApiUrlConstructor: APIURLConstructor,
+        encodingService: EncodingService?,
         completion: @escaping (T?) -> ()
     ){
         print("getFromNetwork - static - \(T.self)")
         let endpoint:APIURLConstructor = customApiUrlConstructor
         
-        NetworkingService.getToObject(endpoint.path(uuid), type: T.self, cache: true){item in
+        NetworkingService.getToObject(endpoint.path(uuid), type: T.self, cache: true, encodingService: encodingService){item in
             guard let item = item else {
                 completion(nil)
                 return
@@ -52,9 +54,10 @@ public extension GettableByUUID {
         uuid:String,
         requiredCacheRecency: CacheRecency,
         customFilenameConstructor: CacheNameConstructor?,
+        encodingService: EncodingService?,
         completion: @escaping ((object: T, cacheReturn: (metRecencyRequirement: Bool, recency: TimeInterval, cacheDate: Date))?)->()){
         let thisCacheNameConstructor = customFilenameConstructor ?? self.cacheNameConstructor
-        CachingService.retrieveFromCacheToObject(filenameConstructor: thisCacheNameConstructor, type: T.self, requiredCacheRecency: requiredCacheRecency){item in
+        CachingService.retrieveFromCacheToObject(filenameConstructor: thisCacheNameConstructor, type: T.self, requiredCacheRecency: requiredCacheRecency, encodingService: encodingService){item in
             guard let item = item else {
                 completion(nil)
                 return
@@ -67,9 +70,10 @@ public extension GettableByUUID {
         uuid:String,
         requiredCacheRecency: CacheRecency,
         customFilenameConstructor: CacheNameConstructor,
+        encodingService: EncodingService?,
         completion: @escaping ((object: T, cacheReturn: (metRecencyRequirement: Bool, recency: TimeInterval, cacheDate: Date))?)->()){
         let cacheNameConstructor = customFilenameConstructor
-        CachingService.retrieveFromCacheToObject(filenameConstructor: cacheNameConstructor, type: T.self, requiredCacheRecency: requiredCacheRecency){item in
+        CachingService.retrieveFromCacheToObject(filenameConstructor: cacheNameConstructor, type: T.self, requiredCacheRecency: requiredCacheRecency, encodingService: encodingService){item in
             guard let item = item else {
                 completion(nil)
                 return
@@ -84,19 +88,20 @@ public extension GettableByUUID {
         forceNetworkGrab:Bool = false,
         customFilenameConstructor: CacheNameConstructor? = nil,
         customApiUrlConstructor: APIURLConstructor? = nil,
+        encodingService: EncodingService?,
         completion: @escaping ((item: T, interval: TimeInterval, cacheDate: Date)?) -> ()){
         print("dynamic get - \(T.self)")
         getFromCache(
             uuid: uuid,
             requiredCacheRecency: desiredCacheRecency,
-            customFilenameConstructor: customFilenameConstructor){cachedObject in
+            customFilenameConstructor: customFilenameConstructor, encodingService: encodingService){cachedObject in
             //Check if we got a cached object
             //If we got it make sure it met our desired cache recency && we werenet going to force a network grab anyway
             if let cachedObject = cachedObject, cachedObject.cacheReturn.metRecencyRequirement, !forceNetworkGrab{
                 completion((cachedObject.object, cachedObject.cacheReturn.recency, cachedObject.cacheReturn.cacheDate))
             } else {
                 //If our cached object was not present OR it was too old then try to grab something fresh from the network
-                getFromNetwork(uuid: uuid, customApiUrlConstructor: customApiUrlConstructor){networkObject in
+                getFromNetwork(uuid: uuid, customApiUrlConstructor: customApiUrlConstructor, encodingService: encodingService){networkObject in
                     
                     //If the network failed to get us our object then check if we can even use the old backup as a very old backup
                     if let networkObject = networkObject{
@@ -124,19 +129,21 @@ public extension GettableByUUID {
         forceNetworkGrab:Bool,
         customFilenameConstructor: CacheNameConstructor,
         customApiUrlConstructor: APIURLConstructor,
+        encodingService: EncodingService?,
         completion: @escaping ((item: T, interval: TimeInterval, cacheDate: Date)?) -> ()){
         print("static get - \(T.self)")
         getFromCache(
             uuid: uuid,
             requiredCacheRecency: desiredCacheRecency,
-            customFilenameConstructor: customFilenameConstructor){cachedObject in
+            customFilenameConstructor: customFilenameConstructor,
+            encodingService: encodingService){cachedObject in
             //Check if we got a cached object
             //If we got it make sure it met our desired cache recency
             if let cachedObject = cachedObject, cachedObject.cacheReturn.metRecencyRequirement, !forceNetworkGrab{
                 completion((cachedObject.object, cachedObject.cacheReturn.recency, cachedObject.cacheReturn.cacheDate))
             } else {
                 //If our cached object was not present OR it was too old then try to grab something fresh from the network
-                getFromNetwork(uuid: uuid, customApiUrlConstructor: customApiUrlConstructor){networkObject in
+                getFromNetwork(uuid: uuid, customApiUrlConstructor: customApiUrlConstructor, encodingService: encodingService){networkObject in
                     
                     //If the network failed to get us our object then check if we can even use the old backup as a very old backup
                     if let networkObject = networkObject{

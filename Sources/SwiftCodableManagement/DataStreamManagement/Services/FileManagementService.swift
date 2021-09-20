@@ -16,10 +16,11 @@ public class FileManagementService: ObservableObject {
         object:T,
         filename:String,
         directory: FileManager.SearchPathDirectory = .documentDirectory,
-        subfolder: [SubfolderPaths] = []
+        subfolder: [SubfolderPaths] = [],
+        encodingService: EncodingService?
     ) -> URL? {
         print("beginning to save \(filename)")
-        guard let data = EncodingService.encode(object) else { return nil}
+        guard let data = (encodingService ?? EncodingService()).encode(object) else { return nil}
         
         guard let documentDirectoryUrl = FileManager.default.urls(for: directory, in: .userDomainMask).first else { return nil}
         

@@ -9,8 +9,29 @@ import SwiftUI
 
 public class EncodingService:ObservableObject {
     
+    init(
+        dateDecodingStrategy:JSONDecoder.DateDecodingStrategy = .iso8601,
+        dataDecodingStrategy:JSONDecoder.DataDecodingStrategy = .base64,
+        dateEncodingStrategy:JSONEncoder.DateEncodingStrategy = .iso8601,
+        dataEncodingStrategy:JSONEncoder.DataEncodingStrategy = .base64
+    ){
+        let encoder = JSONEncoder()
+        encoder.dataEncodingStrategy = dataEncodingStrategy
+        encoder.dateEncodingStrategy = dateEncodingStrategy
+        
+        let decoder = JSONDecoder()
+        decoder.dataDecodingStrategy = dataDecodingStrategy
+        decoder.dateDecodingStrategy = dateDecodingStrategy
+        
+        self.encoder = encoder
+        self.decoder = decoder
+    }
+    
+    var encoder: JSONEncoder
+    var decoder: JSONDecoder
+    
     //Example of use: EncodingService.encode(dummyMattUser)
-    public static func encode<T:Encodable>(_ object: T) -> Data?{
+    public func encode<T:Encodable>(_ object: T) -> Data?{
         let encoder = JSONEncoder()
         do {
             let encodedObject = try encoder.encode(object)
@@ -22,7 +43,12 @@ public class EncodingService:ObservableObject {
         return nil
     }
 
-    public static func decodeData<T>(_ data:Data, type:T.Type) -> T? where T: Decodable{
+    public func decodeData<T>(
+        _ data:Data,
+        type:T.Type,
+        dateDecodingStrategy: JSONDecoder.DateDecodingStrategy? = nil,
+        dataDecodingStrategy: JSONDecoder.DataDecodingStrategy? = nil
+    ) -> T? where T: Decodable{
         print("decoding -> \(type.self)")
         
         let decoder = JSONDecoder()

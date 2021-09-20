@@ -13,13 +13,15 @@ public class CachingService: ObservableObject {
         object:T,
         filenameConstructor:CacheNameConstructor,
         directory: FileManager.SearchPathDirectory = .documentDirectory,
-        subfolder: [FileManagementService.SubfolderPaths] = []
+        subfolder: [FileManagementService.SubfolderPaths] = [],
+        encodingService: EncodingService?
     ) -> URL? {
         FileManagementService.saveObjectToDisc(
             object: object,
             filename: filenameConstructor.constructedCacheName,
             directory: .documentDirectory,
-            subfolder: subfolder
+            subfolder: subfolder,
+            encodingService: encodingService
         )
     }
     
@@ -76,6 +78,7 @@ public class CachingService: ObservableObject {
         filenameConstructor:CacheNameConstructor,
         type:T.Type,
         requiredCacheRecency:CacheRecency,
+        encodingService: EncodingService?,
         completion: @escaping (
             (
                 object: T,
@@ -89,7 +92,7 @@ public class CachingService: ObservableObject {
         if let cachedData = retrieveFromCache(filenameConstructor: filenameConstructor, requiredCacheRecency: requiredCacheRecency){
             
             print("cached data retrieved")
-            if let returnedObject = EncodingService.decodeData(cachedData.data, type: T.self){
+            if let returnedObject = (encodingService ?? EncodingService()).decodeData(cachedData.data, type: T.self){
                 completion((returnedObject, cachedData.cacheReturn))
             } else {
                 completion(nil)
