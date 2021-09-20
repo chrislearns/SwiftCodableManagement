@@ -125,7 +125,7 @@ public extension GettableByUUID {
         customFilenameConstructor: CacheNameConstructor,
         customApiUrlConstructor: APIURLConstructor,
         completion: @escaping ((item: T, interval: TimeInterval, cacheDate: Date)?) -> ()){
-        print("static get")
+        print("static get - \(T)")
         getFromCache(
             uuid: uuid,
             requiredCacheRecency: desiredCacheRecency,
