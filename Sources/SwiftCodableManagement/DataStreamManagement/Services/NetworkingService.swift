@@ -24,9 +24,7 @@ public class NetworkingService: ObservableObject {
         
         
     ) where T: CacheConstructorReversible {
-        print("submitting get")
-        print("type: \(type.self)")
-        print("url: \(url)")
+        print("submitting get -- \(type.self) -- \(url)")
         URLCache.shared.removeAllCachedResponses()
         var urlRequest = URLRequest(url: URL(string: url)!)
         for val in headerValues {

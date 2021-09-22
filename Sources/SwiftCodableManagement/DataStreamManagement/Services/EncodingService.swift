@@ -51,7 +51,7 @@ public class EncodingService:ObservableObject {
         print("decoding -> \(type.self)")
         do {
             let unwrap = try decoder.decode(T.self, from: data)
-            print("object decoded")
+//            print("object decoded")
             return unwrap
         }
         catch {
