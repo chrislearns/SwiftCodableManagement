@@ -29,7 +29,7 @@ public class EncodingService:ObservableObject {
     }
     
     public var encoder: JSONEncoder
-    public svar decoder: JSONDecoder
+    public var decoder: JSONDecoder
     
     //Example of use: EncodingService.encode(dummyMattUser)
     public func encode<T:Encodable>(_ object: T) -> Data?{
