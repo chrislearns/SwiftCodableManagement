@@ -17,19 +17,19 @@ public class NetworkingService: ObservableObject {
         type:T.Type,
         cache:Bool,
         encodingService: EncodingService?,
+        httpBody: Data?,
         headerValues:[String:String] = [:],
         method: SCMHTTPMethod = .get,
         completion: @escaping (T?)->()
-        
-        
-        
     ) where T: CacheConstructorReversible {
         print("submitting get -- \(type.self) -- \(url)")
         URLCache.shared.removeAllCachedResponses()
         var urlRequest = URLRequest(url: URL(string: url)!)
         for val in headerValues {
             urlRequest.addValue(val.value, forHTTPHeaderField: val.key)
+            
         }
+        urlRequest.httpBody = httpBody
         URLCache.shared.removeCachedResponse(for: urlRequest)
         urlRequest.httpMethod = method.rawValue
         

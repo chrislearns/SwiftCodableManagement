@@ -18,8 +18,8 @@ public class APIURLConstructor{
     public var root:String
     public var constructorPathItems:[String]
     
-    public func path(_ itemID:String) -> String{
-        root + constructorPathItems.map{$0}.joined() + itemID
+    public func path(_ itemID:String?) -> String{
+        root + constructorPathItems.map{$0}.joined() + (itemID ?? "")
     }
 }
 
