@@ -46,13 +46,14 @@ public extension GettableByUUID {
         type: T.Type,
         uuid:String,
         customApiUrlConstructor: APIURLConstructor,
+        httpBody: Data?,
         encodingService: EncodingService?,
         completion: @escaping (T?) -> ()
     ){
         print("getFromNetwork - static - \(T.self)")
         let endpoint:APIURLConstructor = customApiUrlConstructor
         
-        NetworkingService.getToObject(endpoint.path(uuid), type: T.self, cache: true, encodingService: encodingService){item in
+        NetworkingService.getToObject(endpoint.path(uuid), type: T.self, cache: true, encodingService: encodingService, httpBody: httpBody){item in
             guard let item = item else {
                 completion(nil)
                 return
@@ -144,6 +145,7 @@ public extension GettableByUUID {
         uuid:String,
         desiredCacheRecency: CacheRecency,
         forceNetworkGrab:Bool,
+        httpBody: Data?,
         customFilenameConstructor: CacheNameConstructor,
         customApiUrlConstructor: APIURLConstructor,
         encodingService: EncodingService?,
@@ -161,7 +163,7 @@ public extension GettableByUUID {
                 completion((cachedObject.object, cachedObject.cacheReturn.recency, cachedObject.cacheReturn.cacheDate))
             } else {
                 //If our cached object was not present OR it was too old then try to grab something fresh from the network
-                getFromNetwork(type: type, uuid: uuid, customApiUrlConstructor: customApiUrlConstructor, encodingService: encodingService){networkObject in
+                getFromNetwork(type: type, uuid: uuid, customApiUrlConstructor: customApiUrlConstructor, httpBody: httpBody, encodingService: encodingService){networkObject in
                     
                     //If the network failed to get us our object then check if we can even use the old backup as a very old backup
                     if let networkObject = networkObject{

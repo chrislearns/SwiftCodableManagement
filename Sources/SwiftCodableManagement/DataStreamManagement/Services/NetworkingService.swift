@@ -12,7 +12,7 @@ public class NetworkingService: ObservableObject {
     
     public init(){}
     
-    static func getToObject<T>(
+    public static func getToObject<T>(
         _ url:String,
         type:T.Type,
         cache:Bool,

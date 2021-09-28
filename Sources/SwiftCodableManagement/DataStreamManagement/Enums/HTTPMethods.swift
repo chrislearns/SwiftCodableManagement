@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-enum SCMHTTPMethod: String {
+public enum SCMHTTPMethod: String {
     case get = "GET"
     case post = "POST"
 }
