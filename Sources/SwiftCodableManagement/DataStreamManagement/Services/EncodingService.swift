@@ -16,6 +16,7 @@ public class EncodingService:ObservableObject {
         dataEncodingStrategy:JSONEncoder.DataEncodingStrategy = .base64
     ){
         let encoder = JSONEncoder()
+        encoder.outputFormatting = .prettyPrinted
         encoder.dataEncodingStrategy = dataEncodingStrategy
         encoder.dateEncodingStrategy = dateEncodingStrategy
         

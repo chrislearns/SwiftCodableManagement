@@ -44,7 +44,7 @@ public extension GettableByUUID {
     
     static func getFromNetwork<T:CacheConstructorReversible>(
         type: T.Type,
-        uuid:String,
+        uuid:String?,
         customApiUrlConstructor: APIURLConstructor,
         httpBody: Data?,
         encodingService: EncodingService?,
