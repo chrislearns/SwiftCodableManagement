@@ -18,7 +18,7 @@ public class NetworkingService: ObservableObject {
         cache:Bool,
         encodingService: EncodingService?,
         httpBody: Data?,
-        headerValues:[String:String] = [:],
+        headerValues:[String:String] = ["Content-Type":"application/json; charset=utf-8"],
         method: SCMHTTPMethod,
         completion: @escaping (T?)->()
     ) where T: CacheConstructorReversible {
