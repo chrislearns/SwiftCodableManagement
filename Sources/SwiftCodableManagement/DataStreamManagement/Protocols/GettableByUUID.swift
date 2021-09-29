@@ -30,6 +30,7 @@ public extension GettableByUUID {
         uuid:String?,
         customApiUrlConstructor: APIURLConstructor,
         httpBody: Data?,
+        headerValues:[String:String] = HeaderValues.contentType_applicationJSONCharsetUTF8.value(),
         method: SCMHTTPMethod = .get,
         encodingService: EncodingService?,
         completion: @escaping (T?) -> ()
