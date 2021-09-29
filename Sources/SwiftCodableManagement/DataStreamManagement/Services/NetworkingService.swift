@@ -31,6 +31,7 @@ public class NetworkingService: ObservableObject {
     public func getFromNetwork<T>(
         _ url:String,
         type:T.Type,
+        uuid:UUID?,
         cache:Bool,
         encodingService: EncodingService?,
         httpBody: Data?,
@@ -77,7 +78,7 @@ public class NetworkingService: ObservableObject {
     
     public static func getFromCache<T:CacheConstructorReversible>(
         type: T.Type,
-        uuid:String,
+        uuid:UUID?,
         requiredCacheRecency: CacheRecency,
         customFilenameConstructor: CacheNameConstructor,
         encodingService: EncodingService?,
@@ -95,7 +96,7 @@ public class NetworkingService: ObservableObject {
     
     public func get<T:CacheConstructorReversible>(
         type: T.Type,
-        uuid:String,
+        uuid:UUID?,
         desiredCacheRecency: CacheRecency,
         forceNetworkGrab:Bool,
         httpBody: Data?,
@@ -119,8 +120,9 @@ public class NetworkingService: ObservableObject {
                     } else {
                         //If our cached object was not present OR it was too old then try to grab something fresh from the network
                         self.getFromNetwork(
-                            customApiUrlConstructor.path(uuid),
+                            customApiUrlConstructor.path(uuid?.uuidString),
                             type: T.self,
+                            uuid: uuid,
                             cache: true,
                             encodingService: encodingService,
                             httpBody: httpBody,
