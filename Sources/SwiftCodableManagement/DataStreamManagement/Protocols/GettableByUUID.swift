@@ -36,7 +36,7 @@ public extension GettableByUUID {
     ){
         print("getFromNetwork - static - \(T.self)")
         if let body = httpBody {
-            print("BODY: \(String(data: body, encoding: .utf8))")
+            print("BODY: \(String(data: body, encoding: .utf8) ?? "NONE")")
         }
         let endpoint:APIURLConstructor = customApiUrlConstructor
         
