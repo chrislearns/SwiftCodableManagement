@@ -88,7 +88,7 @@ public extension GettableByUUID {
                 completion((cachedObject.object, cachedObject.cacheReturn.recency, cachedObject.cacheReturn.cacheDate))
             } else {
                 //If our cached object was not present OR it was too old then try to grab something fresh from the network
-                getFromNetwork(type: type, uuid: uuid, customApiUrlConstructor: customApiUrlConstructor, httpBody: httpBody, encodingService: encodingService, method: method){networkObject in
+                getFromNetwork(type: type, uuid: uuid, customApiUrlConstructor: customApiUrlConstructor, httpBody: httpBody, method: method, encodingService: encodingService){networkObject in
                     
                     //If the network failed to get us our object then check if we can even use the old backup as a very old backup
                     if let networkObject = networkObject{
