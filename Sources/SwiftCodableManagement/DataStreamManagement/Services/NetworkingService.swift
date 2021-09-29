@@ -75,7 +75,7 @@ public class NetworkingService: ObservableObject {
         }
     }
     
-    static func getFromCache<T:CacheConstructorReversible>(
+    public static func getFromCache<T:CacheConstructorReversible>(
         type: T.Type,
         uuid:String,
         requiredCacheRecency: CacheRecency,
@@ -93,7 +93,7 @@ public class NetworkingService: ObservableObject {
             }
         }
     
-    func get<T:CacheConstructorReversible>(
+    public func get<T:CacheConstructorReversible>(
         type: T.Type,
         uuid:String,
         desiredCacheRecency: CacheRecency,
