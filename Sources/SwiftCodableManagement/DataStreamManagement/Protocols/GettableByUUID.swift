@@ -35,6 +35,9 @@ public extension GettableByUUID {
         completion: @escaping (T?) -> ()
     ){
         print("getFromNetwork - static - \(T.self)")
+        if let body = httpBody {
+            print("BODY: \(String(data: body, encoding: .utf8))")
+        }
         let endpoint:APIURLConstructor = customApiUrlConstructor
         
         NetworkingService.getToObject(endpoint.path(uuid), type: T.self, cache: true, encodingService: encodingService, httpBody: httpBody, method: method){item in
