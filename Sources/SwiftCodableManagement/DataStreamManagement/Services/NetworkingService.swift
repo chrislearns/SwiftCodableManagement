@@ -8,6 +8,17 @@
 import SwiftUI
 import Alamofire
 
+public enum HeaderValues{
+    case contentType_applicationJSONCharsetUTF8
+    
+    public func value() -> [String:String] {
+        switch self {
+        case .contentType_applicationJSONCharsetUTF8:
+            return ["Content-Type":"application/json; charset=utf-8"]
+        }
+    }
+}
+
 public class NetworkingService: ObservableObject {
     
     public init(){}
@@ -18,7 +29,7 @@ public class NetworkingService: ObservableObject {
         cache:Bool,
         encodingService: EncodingService?,
         httpBody: Data?,
-        headerValues:[String:String] = ["Content-Type":"application/json; charset=utf-8"],
+        headerValues:[String:String] = HeaderValues.contentType_applicationJSONCharsetUTF8.value(),
         method: SCMHTTPMethod,
         completion: @escaping (T?)->()
     ) where T: CacheConstructorReversible {
