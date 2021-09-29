@@ -35,7 +35,7 @@ public class NetworkingService: ObservableObject {
         urlRequest.httpMethod = method.rawValue
         
         let request = AF.request(urlRequest)
-        urlreq
+        
         // 2
         
         request.responseJSON { (data) in
