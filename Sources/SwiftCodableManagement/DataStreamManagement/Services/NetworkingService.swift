@@ -22,18 +22,20 @@ public class NetworkingService: ObservableObject {
         method: SCMHTTPMethod,
         completion: @escaping (T?)->()
     ) where T: CacheConstructorReversible {
-        print("submitting get -- \(type.self) -- \(url)")
+        print("submitting \(method.rawValue) -- \(type.self) -- \(url)")
         URLCache.shared.removeAllCachedResponses()
         var urlRequest = URLRequest(url: URL(string: url)!)
         for val in headerValues {
             urlRequest.addValue(val.value, forHTTPHeaderField: val.key)
             
         }
+        
         urlRequest.httpBody = httpBody
         URLCache.shared.removeCachedResponse(for: urlRequest)
         urlRequest.httpMethod = method.rawValue
         
         let request = AF.request(urlRequest)
+        urlreq
         // 2
         
         request.responseJSON { (data) in
@@ -44,7 +46,7 @@ public class NetworkingService: ObservableObject {
                 return
             }
             print(String(data: data, encoding: .utf8) ?? "data from rquest could not be unwrapped to string")
-            print("get completed")
+            print("\(method.rawValue) completed")
             
             let returnedObject = (encodingService ?? EncodingService()).decodeData(data, type: T.self)
             completion(returnedObject)
