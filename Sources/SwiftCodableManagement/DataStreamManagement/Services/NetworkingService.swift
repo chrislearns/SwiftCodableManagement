@@ -19,7 +19,7 @@ public class NetworkingService: ObservableObject {
         encodingService: EncodingService?,
         httpBody: Data?,
         headerValues:[String:String] = [:],
-        method: SCMHTTPMethod = .get,
+        method: SCMHTTPMethod,
         completion: @escaping (T?)->()
     ) where T: CacheConstructorReversible {
         print("submitting get -- \(type.self) -- \(url)")
@@ -40,7 +40,7 @@ public class NetworkingService: ObservableObject {
             
             guard let data = data.data else {
                 completion(nil)
-                
+                print("get not valid")
                 return
             }
             print(String(data: data, encoding: .utf8) ?? "data from rquest could not be unwrapped to string")
