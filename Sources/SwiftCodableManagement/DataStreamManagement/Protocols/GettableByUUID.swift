@@ -75,7 +75,7 @@ public extension GettableByUUID {
         encodingService: EncodingService?,
         method: SCMHTTPMethod = .get,
         completion: @escaping ((item: T, interval: TimeInterval, cacheDate: Date)?) -> ()){
-        print("static get - \(T.self)")
+            print("static \(method.rawValue) - \(T.self)")
         getFromCache(
             type: type,
             uuid: uuid,

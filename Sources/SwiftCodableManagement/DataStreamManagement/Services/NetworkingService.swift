@@ -42,7 +42,7 @@ public class NetworkingService: ObservableObject {
             
             guard let data = data.data else {
                 completion(nil)
-                print("get not valid")
+                print("\(method.rawValue) not valid")
                 return
             }
             print(String(data: data, encoding: .utf8) ?? "data from rquest could not be unwrapped to string")
