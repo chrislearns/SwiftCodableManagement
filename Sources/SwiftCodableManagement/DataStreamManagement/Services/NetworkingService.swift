@@ -29,7 +29,7 @@ public class NetworkingService: ObservableObject {
     }
     
     public func getFromNetwork<T>(
-        _ url:String,
+        customApiUrlConstructor: APIURLConstructor,
         type:T.Type,
         uuid:UUID?,
         cache:Bool,
@@ -39,9 +39,9 @@ public class NetworkingService: ObservableObject {
         method: SCMHTTPMethod,
         completion: @escaping (T?)->()
     ) where T: CacheConstructorReversible {
-        print("submitting \(method.rawValue) -- \(type.self) -- \(url)")
+        print("submitting \(method.rawValue) -- \(type.self) -- \(customApiUrlConstructor.path(uuid?.uuidString))")
         URLCache.shared.removeAllCachedResponses()
-        var urlRequest = URLRequest(url: URL(string: url)!)
+        var urlRequest = URLRequest(url: URL(string: customApiUrlConstructor.path(uuid?.uuidString))!)
         let allHeaders = self.headerValues.merging(headerValues) { selfVal, paramVal in
             paramVal
         }
@@ -120,7 +120,7 @@ public class NetworkingService: ObservableObject {
                     } else {
                         //If our cached object was not present OR it was too old then try to grab something fresh from the network
                         self.getFromNetwork(
-                            customApiUrlConstructor.path(uuid?.uuidString),
+                            customApiUrlConstructor: customApiUrlConstructor,
                             type: T.self,
                             uuid: uuid,
                             cache: true,
