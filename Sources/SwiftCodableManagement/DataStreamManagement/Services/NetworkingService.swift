@@ -40,8 +40,10 @@ public class NetworkingService: ObservableObject {
             
             guard let data = data.data else {
                 completion(nil)
+                
                 return
             }
+            print(String(data: data, encoding: .utf8) ?? "data from rquest could not be unwrapped to string")
             print("get completed")
             
             let returnedObject = (encodingService ?? EncodingService()).decodeData(data, type: T.self)
