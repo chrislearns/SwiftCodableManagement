@@ -177,10 +177,9 @@ public class NetworkingService: ObservableObject {
                 completion(nil)
                 return
             }
-            print("\(method) to (\(T.Self) completed")
+            print("\(method) to (\(T.self) completed")
             
             if let object = data.toObject(type: T.self, encodingService: encodingService){
-                print(String(decoding: jsonData, as: UTF8.self))
                 completion(object)
             } else {
                 print("json data malformed")
