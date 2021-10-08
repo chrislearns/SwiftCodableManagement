@@ -155,7 +155,10 @@ public class NetworkingService: ObservableObject {
         method: HTTPMethod = .get,
         encodingService: EncodingService? = nil,
         completion: @escaping (T?) -> ()){
-        guard let url = URL(string: urlString) else { completion(nil) }
+        guard let url = URL(string: urlString) else {
+            completion(nil)
+            return 
+        }
         
         
         let method = HTTPMethod.get.rawValue
