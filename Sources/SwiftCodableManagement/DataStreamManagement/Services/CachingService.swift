@@ -147,6 +147,7 @@ public class CachingService: ObservableObject {
         }
     }
     
+    #if os(iOS)
     public static func saveImageToCache(
         image: UIImage,
         identifier:UUID,
@@ -168,6 +169,7 @@ public class CachingService: ObservableObject {
             )
         }
     }
+    #endif
     
 }
 
