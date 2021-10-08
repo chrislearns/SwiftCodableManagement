@@ -148,5 +148,47 @@ public class NetworkingService: ObservableObject {
                     }
                 }
         }
+    
+    public func simpleRequestToObject<T: Codable>(
+        type:T.Type,
+        urlString: String,
+        method: HTTPMethod = .get,
+        encodingService: EncodingService? = nil,
+        completion: @escaping (T?) -> ()){
+        guard let url = URL(string: urlString) else { completion(nil) }
+        
+        
+        let method = HTTPMethod.get.rawValue
+        URLCache.shared.removeAllCachedResponses()
+        var urlRequest = URLRequest(url: url)
+
+        //urlRequest.httpBody = httpBody
+        URLCache.shared.removeCachedResponse(for: urlRequest)
+        urlRequest.httpMethod = method
+
+        let request = AF.request(urlRequest)
+
+        // 2
+
+        request.responseJSON { (data) in
+            
+            guard let data = data.data else {
+                print("\(method) not valid")
+                completion(nil)
+                return
+            }
+            print("\(method) to (\(T.Self) completed")
+            
+            if let object = data.toObject(type: T.self, encodingService: encodingService){
+                print(String(decoding: jsonData, as: UTF8.self))
+                completion(object)
+            } else {
+                print("json data malformed")
+                completion(nil)
+            }
+            
+        }
+
+    }
 }
 
