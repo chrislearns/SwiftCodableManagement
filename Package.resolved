@@ -9,6 +9,15 @@
           "revision": "f96b619bcb2383b43d898402283924b80e2c4bae",
           "version": "5.4.3"
         }
+      },
+      {
+        "package": "SweetSimpleSwift",
+        "repositoryURL": "https://github.com/chrislearns/SweetSimpleSwift.git",
+        "state": {
+          "branch": null,
+          "revision": "d5d159148a2137d6b342edadb9bc3ca742ace196",
+          "version": "0.1.0"
+        }
       }
     ]
   },

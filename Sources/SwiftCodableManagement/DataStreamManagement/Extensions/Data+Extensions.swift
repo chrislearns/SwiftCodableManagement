@@ -32,4 +32,8 @@ public extension Data {
             self.append(buffer, count: read)
         }
     }
+    
+    func toObject<T:Codable>(type: T.Type, encodingService: EncodingService?) -> T?{
+        (encodingService ?? EncodingService()).decodeData(self, type: T.self)
+    }
 }

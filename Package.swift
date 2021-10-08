@@ -19,7 +19,9 @@ let package = Package(
         .package(
                     url: "https://github.com/Alamofire/Alamofire.git",
                     from: "5.2.9"
-                )
+                ),
+        .package(url: "https://github.com/chrislearns/SweetSimpleSwift.git",
+                 from: "0.1.0")
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
@@ -27,9 +29,7 @@ let package = Package(
         .target(
             name: "SwiftCodableManagement",
             dependencies: ["Alamofire"]),
-        .testTarget(
-            name: "SwiftCodableManagementTests",
-            dependencies: ["SwiftCodableManagement"]),
+        
     ]
     
 )
