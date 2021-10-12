@@ -154,9 +154,9 @@ public class NetworkingService: ObservableObject {
         urlString: String,
         method: HTTPMethod = .get,
         encodingService: EncodingService? = nil,
-        completion: @escaping (T?) -> ()){
+        completion: @escaping (T?, String) -> ()){
         guard let url = URL(string: urlString) else {
-            completion(nil)
+            completion(nil, urlString)
             return 
         }
         
@@ -177,16 +177,16 @@ public class NetworkingService: ObservableObject {
             
             guard let data = data.data else {
                 print("\(method) not valid")
-                completion(nil)
+                completion(nil, urlString)
                 return
             }
             print("\(method) to (\(T.self) completed")
             
             if let object = data.toObject(type: T.self, encodingService: encodingService){
-                completion(object)
+                completion(object, urlString)
             } else {
                 print("json data malformed")
-                completion(nil)
+                completion(nil, urlString)
             }
             
         }
