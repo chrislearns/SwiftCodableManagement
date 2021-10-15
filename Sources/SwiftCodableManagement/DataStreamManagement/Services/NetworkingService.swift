@@ -36,7 +36,6 @@ public class NetworkingService: ObservableObject {
         encodingService: EncodingService?,
         httpBody: Data?,
         headerValues: [String:String],
-        bearerToken: String? = nil,
         method: SCMHTTPMethod,
         completion: @escaping (T?)->()
     ) where T: CacheConstructorReversible {
@@ -155,6 +154,8 @@ public class NetworkingService: ObservableObject {
     public func simpleRequestToObject<T: Codable>(
         type:T.Type,
         urlString: String,
+        httpBody: Data? = nil,
+        headerValues: [String:String] = [:],
         method: HTTPMethod = .get,
         encodingService: EncodingService? = nil,
         completion: @escaping (T?, String) -> ()){
@@ -167,8 +168,17 @@ public class NetworkingService: ObservableObject {
         let method = HTTPMethod.get.rawValue
         URLCache.shared.removeAllCachedResponses()
         var urlRequest = URLRequest(url: url)
+            let allHeaders = self.headerValues.merging(headerValues) { selfVal, paramVal in
+                paramVal
+            }
+            print("headers = \(allHeaders)")
+            urlRequest.headers = HTTPHeaders(allHeaders)
+            if let bearerToken = bearerToken {
+                urlRequest.headers.add(.authorization(bearerToken: bearerToken))
+            }
+            urlRequest.httpBody = httpBody
 
-        //urlRequest.httpBody = httpBody
+        
         URLCache.shared.removeCachedResponse(for: urlRequest)
         urlRequest.httpMethod = method
 
