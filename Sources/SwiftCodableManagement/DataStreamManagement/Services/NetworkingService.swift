@@ -47,9 +47,6 @@ public class NetworkingService: ObservableObject {
         }
         print("headers = \(allHeaders)")
         urlRequest.headers = HTTPHeaders(allHeaders)
-        if let bearerToken = bearerToken {
-            urlRequest.headers.add(.authorization(bearerToken: bearerToken))
-        }
         urlRequest.httpBody = httpBody
         URLCache.shared.removeCachedResponse(for: urlRequest)
         urlRequest.httpMethod = method.rawValue
@@ -173,9 +170,6 @@ public class NetworkingService: ObservableObject {
             }
             print("headers = \(allHeaders)")
             urlRequest.headers = HTTPHeaders(allHeaders)
-            if let bearerToken = bearerToken {
-                urlRequest.headers.add(.authorization(bearerToken: bearerToken))
-            }
             urlRequest.httpBody = httpBody
 
         
