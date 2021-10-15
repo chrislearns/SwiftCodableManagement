@@ -174,7 +174,7 @@ public class NetworkingService: ObservableObject {
 
         
         URLCache.shared.removeCachedResponse(for: urlRequest)
-        urlRequest.httpMethod = method
+            urlRequest.httpMethod = method.rawValue
 
         let request = AF.request(urlRequest)
 
