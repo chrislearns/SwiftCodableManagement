@@ -162,7 +162,7 @@ public class NetworkingService: ObservableObject {
         }
         
         
-        let method = HTTPMethod.get.rawValue
+        
         URLCache.shared.removeAllCachedResponses()
         var urlRequest = URLRequest(url: url)
             let allHeaders = self.headerValues.merging(headerValues) { selfVal, paramVal in
