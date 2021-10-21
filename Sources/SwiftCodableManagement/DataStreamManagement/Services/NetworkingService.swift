@@ -70,7 +70,7 @@ public class NetworkingService: ObservableObject {
             
             print("completion handler executed")
             if cache, let decodedObject = returnedObject {
-                _ = CachingService.saveObjectToCache(object: returnedObject, filenameConstructor: decodedObject.cacheNameConstructor(uuid), encodingService: encodingService)
+                _ = CachingService.saveObjectToCache(object: returnedObject, filenameConstructor: type.cacheNameConstructor(uuid), encodingService: encodingService)
             }
         }
     }

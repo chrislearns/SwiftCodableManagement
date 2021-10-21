@@ -14,7 +14,7 @@ public protocol CacheConstructorReversible:Codable {
 }
 
 extension CacheConstructorReversible {
-    public func cacheNameConstructor(_ id: UUID? = nil) -> CacheNameConstructor {
+    public static func cacheNameConstructor(_ id: UUID? = nil) -> CacheNameConstructor {
         .init(prefix: Self.cachePrefix, suffix: Self.cacheSuffix, uniqueIdentifier: id?.uuidString)
     }
 }
