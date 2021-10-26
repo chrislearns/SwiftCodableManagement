@@ -12,7 +12,7 @@ public enum SCMHTTPMethod: String {
     case get = "GET"
     case post = "POST"
     
-    var httpMethod: HTTPMethod {
+    public var httpMethod: HTTPMethod {
         switch self {
         case .get:
             return .get
