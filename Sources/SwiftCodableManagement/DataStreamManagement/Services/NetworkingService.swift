@@ -155,9 +155,9 @@ public class NetworkingService: ObservableObject {
         headerValues: [String:String] = [:],
         method: HTTPMethod = .get,
         encodingService: EncodingService? = nil,
-        completion: @escaping (_ obj: T?, _ url: String, _ data: Data?, _ request: URLRequest?) -> ()){
+        completion: @escaping (_ obj: T?, _ url: String, _ data: Data?, _ request: URLRequest?, _ statusCode: Int?) -> ()){
         guard let url = URL(string: urlString) else {
-            completion(nil, urlString, nil, nil)
+            completion(nil, urlString, nil, nil, nil)
             return 
         }
         
@@ -180,21 +180,22 @@ public class NetworkingService: ObservableObject {
 
         // 2
 
+            
         request.responseJSON { (data) in
             
             guard let unwrappedData = data.data else {
                 print("\(method) not valid")
-                completion(nil, urlString, data.data, urlRequest)
+                completion(nil, urlString, data.data, urlRequest, request.response?.statusCode)
                 return
             }
             print("\(method) to (\(T.self) completed")
             
             if let object = unwrappedData.toObject(type: T.self, encodingService: encodingService){
                 
-                completion(object, urlString, unwrappedData, urlRequest)
+                completion(object, urlString, unwrappedData, urlRequest, request.response?.statusCode)
             } else {
                 print("json data malformed")
-                completion(nil, urlString, unwrappedData, urlRequest)
+                completion(nil, urlString, unwrappedData, urlRequest, request.response?.statusCode)
             }
             
         }
