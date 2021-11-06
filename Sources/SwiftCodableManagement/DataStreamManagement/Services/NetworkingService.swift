@@ -68,7 +68,7 @@ public class NetworkingService: ObservableObject {
             let returnedObject = (encodingService ?? EncodingService()).decodeData(data, type: T.self)
             completion(returnedObject)
             
-            print("completion handler executed")
+//            print("completion handler executed")
             if cache, let decodedObject = returnedObject {
                 _ = CachingService.saveObjectToCache(object: returnedObject, filenameConstructor: type.cacheNameConstructor(uuid), encodingService: encodingService)
             }
