@@ -188,13 +188,11 @@ public class NetworkingService: ObservableObject {
                 completion(nil, urlString, data.data, urlRequest, request.response?.statusCode)
                 return
             }
-            print("\(method) to (\(T.self) completed")
             
             if let object = unwrappedData.toObject(type: T.self, encodingService: encodingService){
                 
                 completion(object, urlString, unwrappedData, urlRequest, request.response?.statusCode)
             } else {
-                print("json data malformed")
                 completion(nil, urlString, unwrappedData, urlRequest, request.response?.statusCode)
             }
             

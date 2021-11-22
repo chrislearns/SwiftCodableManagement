@@ -49,10 +49,8 @@ public class EncodingService:ObservableObject {
         dateDecodingStrategy: JSONDecoder.DateDecodingStrategy? = nil,
         dataDecodingStrategy: JSONDecoder.DataDecodingStrategy? = nil
     ) -> T? where T: Decodable{
-//        print("decoding -> \(type.self)")
         do {
             let unwrap = try decoder.decode(T.self, from: data)
-//            print("object decoded")
             return unwrap
         }
         catch {
