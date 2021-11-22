@@ -11,7 +11,6 @@ public extension Dictionary{
     public func toJSON(encoder: JSONEncoder) throws -> Data? where Value: Codable, Key == String{
         
         let data = try encoder.encode(self)
-        Global.printDev(String(data: data, encoding: .utf8)!)
         return data
         
         
