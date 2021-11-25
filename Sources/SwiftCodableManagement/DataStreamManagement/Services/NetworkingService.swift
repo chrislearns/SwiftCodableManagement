@@ -201,6 +201,19 @@ public class NetworkingService: ObservableObject {
 
 
 public struct SimpleNetworkRequest: Codable {
+    public init(urlString: String,
+                httpBody: Data?,
+                authHeader: [String : String],
+                method: HTTPMethod,
+                auxiliaryHeaders: [String : String]
+    ) {
+        self.urlString = urlString
+        self.httpBody = httpBody
+        self.authHeader = authHeader
+        self.method = method
+        self.auxiliaryHeaders = auxiliaryHeaders
+    }
+    
     public var urlString: String
     public var httpBody: Data?
     public var authHeader: [String: String]
