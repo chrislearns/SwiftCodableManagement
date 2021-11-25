@@ -156,48 +156,56 @@ public class NetworkingService: ObservableObject {
         method: HTTPMethod = .get,
         encodingService: EncodingService? = nil,
         completion: @escaping (_ obj: T?, _ url: String, _ data: Data?, _ request: URLRequest?, _ statusCode: Int?) -> ()){
-        guard let url = URL(string: urlString) else {
-            completion(nil, urlString, nil, nil, nil)
-            return 
-        }
-        
-        
-        
-        URLCache.shared.removeAllCachedResponses()
-        var urlRequest = URLRequest(url: url)
+            simpleRequest(
+                urlString: urlString,
+                httpBody: httpBody,
+                headerValues: headerValues,
+                method: method) { url, data, request, statusCode in
+                    guard let unwrappedData = data else {
+                        completion(nil, url, data, request, statusCode)
+                        return
+                    }
+                    
+                    guard let object = unwrappedData.toObject(type: T.self, encodingService: encodingService) else {
+                        completion(nil, urlString, unwrappedData, request, statusCode)
+                        return
+                    }
+                    
+                    completion(object, urlString, unwrappedData, request, statusCode)
+                }
+    }
+    
+    public func simpleRequest(
+        urlString: String,
+        httpBody: Data? = nil,
+        headerValues: [String:String] = [:],
+        method: HTTPMethod = .get,
+        completion: @escaping (_ url: String, _ data: Data?, _ request: URLRequest?, _ statusCode: Int?) -> ()){
+            guard let url = URL(string: urlString) else {
+                completion(urlString, nil, nil, nil)
+                return
+            }
+            
+            
+            
+            URLCache.shared.removeAllCachedResponses()
+            var urlRequest = URLRequest(url: url)
             let allHeaders = self.headerValues.merging(headerValues) { selfVal, paramVal in
                 paramVal
             }
             print("headers = \(allHeaders)")
             urlRequest.headers = HTTPHeaders(allHeaders)
             urlRequest.httpBody = httpBody
-
-        
-        URLCache.shared.removeCachedResponse(for: urlRequest)
+            
+            
+            URLCache.shared.removeCachedResponse(for: urlRequest)
             urlRequest.httpMethod = method.rawValue
-
-        let request = AF.request(urlRequest)
-
-        // 2
-
             
-        request.responseJSON { (data) in
+            let request = AF.request(urlRequest)
             
-            guard let unwrappedData = data.data else {
-                print("\(method) not valid")
-                completion(nil, urlString, data.data, urlRequest, request.response?.statusCode)
-                return
+            request.responseJSON { (data) in
+                completion(urlString, data.data, urlRequest, request.response?.statusCode)
             }
-            
-            if let object = unwrappedData.toObject(type: T.self, encodingService: encodingService){
-                
-                completion(object, urlString, unwrappedData, urlRequest, request.response?.statusCode)
-            } else {
-                completion(nil, urlString, unwrappedData, urlRequest, request.response?.statusCode)
-            }
-            
         }
-
-    }
 }
 
