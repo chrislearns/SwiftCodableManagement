@@ -150,39 +150,29 @@ public class NetworkingService: ObservableObject {
     
     public func simpleRequestToObject<T: Codable>(
         type:T.Type,
-        urlString: String,
-        httpBody: Data? = nil,
-        headerValues: [String:String] = [:],
-        method: HTTPMethod = .get,
+        requestObject: SimpleNetworkRequest,
         encodingService: EncodingService? = nil,
         completion: @escaping (_ obj: T?, _ url: String, _ data: Data?, _ request: URLRequest?, _ statusCode: Int?) -> ()){
-            simpleRequest(
-                urlString: urlString,
-                httpBody: httpBody,
-                headerValues: headerValues,
-                method: method) { url, data, request, statusCode in
+            simpleRequest(requestObject: requestObject) { url, data, request, statusCode in
                     guard let unwrappedData = data else {
                         completion(nil, url, data, request, statusCode)
                         return
                     }
                     
                     guard let object = unwrappedData.toObject(type: T.self, encodingService: encodingService) else {
-                        completion(nil, urlString, unwrappedData, request, statusCode)
+                        completion(nil, url, unwrappedData, request, statusCode)
                         return
                     }
                     
-                    completion(object, urlString, unwrappedData, request, statusCode)
+                    completion(object, url, unwrappedData, request, statusCode)
                 }
     }
     
     public func simpleRequest(
-        urlString: String,
-        httpBody: Data? = nil,
-        headerValues: [String:String] = [:],
-        method: HTTPMethod = .get,
+        requestObject: SimpleNetworkRequest,
         completion: @escaping (_ url: String, _ data: Data?, _ request: URLRequest?, _ statusCode: Int?) -> ()){
-            guard let url = URL(string: urlString) else {
-                completion(urlString, nil, nil, nil)
+            guard let url = URL(string: requestObject.urlString) else {
+                completion(requestObject.urlString, nil, nil, nil)
                 return
             }
             
@@ -190,22 +180,33 @@ public class NetworkingService: ObservableObject {
             
             URLCache.shared.removeAllCachedResponses()
             var urlRequest = URLRequest(url: url)
-            let allHeaders = self.headerValues.merging(headerValues) { selfVal, paramVal in
+            let allHeaders = self.headerValues.merging(requestObject.allHeaders) { selfVal, paramVal in
                 paramVal
             }
             print("headers = \(allHeaders)")
             urlRequest.headers = HTTPHeaders(allHeaders)
-            urlRequest.httpBody = httpBody
+            urlRequest.httpBody = requestObject.httpBody
             
             
             URLCache.shared.removeCachedResponse(for: urlRequest)
-            urlRequest.httpMethod = method.rawValue
+            urlRequest.httpMethod = requestObject.method.rawValue
             
             let request = AF.request(urlRequest)
             
             request.responseJSON { (data) in
-                completion(urlString, data.data, urlRequest, request.response?.statusCode)
+                completion(requestObject.urlString, data.data, urlRequest, request.response?.statusCode)
             }
         }
 }
 
+
+public struct SimpleNetworkRequest {
+    public var urlString: String
+    public var httpBody: Data?
+    public var authHeader: [String: String]
+    public var method: HTTPMethod
+    public var auxiliaryHeaders: [String: String]
+    public var allHeaders:[String:String]{
+        authHeader.mergeDicts(auxiliaryHeaders)
+    }
+}

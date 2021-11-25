@@ -21,4 +21,21 @@ public extension Dictionary{
         
     }
     
+    
+    public func mergeDicts(_ dict2: [Key: Value]) -> [Key: Value] {
+        var result = self
+        for (key, value) in dict2 {
+            if let resultValue = result[key] {
+                result[key] = resultValue
+            } else {
+                result[key] = value
+            }
+        }
+        return result
+    }
+    
+    
+    
+    
+    
 }
