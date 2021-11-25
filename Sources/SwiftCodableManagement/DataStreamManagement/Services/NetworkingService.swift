@@ -200,7 +200,7 @@ public class NetworkingService: ObservableObject {
 }
 
 
-public struct SimpleNetworkRequest {
+public struct SimpleNetworkRequest: Codable {
     public var urlString: String
     public var httpBody: Data?
     public var authHeader: [String: String]
@@ -210,3 +210,5 @@ public struct SimpleNetworkRequest {
         authHeader.mergeDicts(auxiliaryHeaders)
     }
 }
+
+extension HTTPMethod: Codable { }
