@@ -204,18 +204,32 @@ public class NetworkingService: ObservableObject {
         }
     
     static var sharedNetworkingQueue: [QueuedNetworkRequest] = []
+    
     public func setupTimers(){
         let allIntervals = QueuedNetworkRequest.ExecutionTime.allCases.compactMap{$0.interval}
         print("setting up timers for the following items")
         for interval in allIntervals {
-            print(interval)
+            print("setup timer: \(interval)")
+            _ = Timer.init(
+                timeInterval: Double(interval),
+                repeats: true
+            ){ timer in
+                DispatchQueue.global(qos: .userInitiated).async{
+                    let itemsOnThisInterval = NetworkingService.sharedNetworkingQueue.filter{$0.executionTime.interval == interval}
+                    self.executeQueuedRequests(interval: interval, requests: itemsOnThisInterval)
+                }
+            }
         }
     }
     
+    func executeQueuedRequests(interval: Int, requests: [QueuedNetworkRequest]){
+        print("Executing items queued on interval of \(interval) - count: \(requests.count)")
+        
+    }
 }
 
 
-public struct SimpleNetworkRequest: Codable {
+public struct SimpleNetworkRequest: Codable, Hashable {
     public init(urlString: String,
                 httpBody: Data?,
                 authHeader: [String : String],
@@ -240,7 +254,7 @@ public struct SimpleNetworkRequest: Codable {
 }
 
 
-public struct QueuedNetworkRequest: Codable {
+public struct QueuedNetworkRequest: Codable, Hashable {
     public var request: SimpleNetworkRequest
     public var executionTime: ExecutionTime
     
