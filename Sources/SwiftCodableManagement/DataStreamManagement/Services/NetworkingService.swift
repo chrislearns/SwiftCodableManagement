@@ -215,7 +215,7 @@ public class NetworkingService: ObservableObject {
                 timeInterval: Double(interval),
                 repeats: true
             ){ timer in
-                DispatchQueue.global(qos: .userInitiated).async{
+                DispatchQueue.main.async{
                     let itemsOnThisInterval = NetworkingService.sharedNetworkingQueue.filter{$0.executionTime.interval == interval}
                     self.executeQueuedRequests(interval: interval, requests: itemsOnThisInterval)
                 }
