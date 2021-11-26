@@ -21,14 +21,53 @@ public enum HeaderValues{
 
 public class NetworkingService: ObservableObject {
     public var headerValues: [String:String]
+    private var timers: [Timer] = []
+    public static var sharedNetworkingQueue: [QueuedNetworkRequest] = []
     
+    var queueAction: ((QueuedNetworkRequest) -> ())?
     public init(
-        headerValues: [String:String] = HeaderValues.contentType_applicationJSONCharsetUTF8.value()
+        headerValues: [String:String] = HeaderValues.contentType_applicationJSONCharsetUTF8.value(),
+        queueAction: ((QueuedNetworkRequest) -> ())?
     ){
         self.headerValues = headerValues
+        self.queueAction = queueAction
         self.setupTimers()
+        
     }
     
+    
+}
+
+//MARK: - Queue Related Items
+public extension NetworkingService {
+    public func setupTimers(){
+        let allIntervals = QueuedNetworkRequest.ExecutionTime.allCases.compactMap{$0.interval}
+        print("setting up timers for the following items")
+        for interval in allIntervals {
+            print("setup timer: \(interval)")
+            let timer = Timer.scheduledTimer(
+                withTimeInterval: Double(interval),
+                repeats: true
+            ){ timer in
+                DispatchQueue.main.async{
+                    let itemsOnThisInterval = NetworkingService.sharedNetworkingQueue.filter{$0.executionTime.interval == interval}
+                    self.executeQueuedRequests(interval: interval, requests: itemsOnThisInterval)
+                }
+            }
+            timers.append(timer)
+        }
+    }
+    
+    func executeQueuedRequests(interval: Int, requests: [QueuedNetworkRequest]){
+        print("Executing items queued on interval of \(interval) - count: \(requests.count)")
+        for queuedRequest in requests {
+            queueAction?(queuedRequest)
+        }
+    }
+}
+
+//MARK: - Request Related Items
+public extension NetworkingService {
     public func getFromNetwork<T>(
         customApiUrlConstructor: APIURLConstructor,
         type:T.Type,
@@ -202,34 +241,7 @@ public class NetworkingService: ObservableObject {
                 completion(requestObject.urlString, data.data, urlRequest, request.response?.statusCode)
             }
         }
-    
-    static var sharedNetworkingQueue: [QueuedNetworkRequest] = []
-    
-    private var timers: [Timer] = []
-    public func setupTimers(){
-        let allIntervals = QueuedNetworkRequest.ExecutionTime.allCases.compactMap{$0.interval}
-        print("setting up timers for the following items")
-        for interval in allIntervals {
-            print("setup timer: \(interval)")
-            let timer = Timer.scheduledTimer(
-                withTimeInterval: Double(interval),
-                repeats: true
-            ){ timer in
-                DispatchQueue.main.async{
-                    let itemsOnThisInterval = NetworkingService.sharedNetworkingQueue.filter{$0.executionTime.interval == interval}
-                    self.executeQueuedRequests(interval: interval, requests: itemsOnThisInterval)
-                }
-            }
-            timers.append(timer)
-        }
-    }
-    
-    func executeQueuedRequests(interval: Int, requests: [QueuedNetworkRequest]){
-        print("Executing items queued on interval of \(interval) - count: \(requests.count)")
-        
-    }
 }
-
 
 public struct SimpleNetworkRequest: Codable, Hashable {
     public init(urlString: String,
