@@ -26,6 +26,7 @@ public class NetworkingService: ObservableObject {
         headerValues: [String:String] = HeaderValues.contentType_applicationJSONCharsetUTF8.value()
     ){
         self.headerValues = headerValues
+        self.setupTimers()
     }
     
     public func getFromNetwork<T>(
