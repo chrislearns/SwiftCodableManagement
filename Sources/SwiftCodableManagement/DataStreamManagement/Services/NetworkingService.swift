@@ -247,6 +247,7 @@ public struct QueuedNetworkRequest: Codable {
         case atStart
         case immediately
         
+        case q1min
         case q5min
         case q10min
         case q15min
@@ -264,6 +265,8 @@ public struct QueuedNetworkRequest: Codable {
                 return nil
             case .immediately:
                 return nil
+            case .q1min:
+                return 60
             case .q5min:
                 return 300
             case .q10min:
