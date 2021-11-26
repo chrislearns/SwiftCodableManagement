@@ -205,12 +205,13 @@ public class NetworkingService: ObservableObject {
     
     static var sharedNetworkingQueue: [QueuedNetworkRequest] = []
     
+    private var timers: [Timer] = []
     public func setupTimers(){
         let allIntervals = QueuedNetworkRequest.ExecutionTime.allCases.compactMap{$0.interval}
         print("setting up timers for the following items")
         for interval in allIntervals {
             print("setup timer: \(interval)")
-            _ = Timer.init(
+            let timer = Timer.init(
                 timeInterval: Double(interval),
                 repeats: true
             ){ timer in
@@ -219,6 +220,7 @@ public class NetworkingService: ObservableObject {
                     self.executeQueuedRequests(interval: interval, requests: itemsOnThisInterval)
                 }
             }
+            timers.append(timer)
         }
     }
     
