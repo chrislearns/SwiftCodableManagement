@@ -151,9 +151,10 @@ public class NetworkingService: ObservableObject {
     public func simpleRequestToObject<T: Codable>(
         type:T.Type,
         requestObject: SimpleNetworkRequest,
+        retryInterval: QueuedNetworkRequest.ExecutionTime?,
         encodingService: EncodingService? = nil,
         completion: @escaping (_ obj: T?, _ url: String, _ data: Data?, _ request: URLRequest?, _ statusCode: Int?) -> ()){
-            simpleRequest(requestObject: requestObject) { url, data, request, statusCode in
+            simpleRequest(requestObject: requestObject, retryInterval: retryInterval) { url, data, request, statusCode in
                     guard let unwrappedData = data else {
                         completion(nil, url, data, request, statusCode)
                         return
@@ -170,13 +171,12 @@ public class NetworkingService: ObservableObject {
     
     public func simpleRequest(
         requestObject: SimpleNetworkRequest,
+        retryInterval: QueuedNetworkRequest.ExecutionTime?,
         completion: @escaping (_ url: String, _ data: Data?, _ request: URLRequest?, _ statusCode: Int?) -> ()){
             guard let url = URL(string: requestObject.urlString) else {
                 completion(requestObject.urlString, nil, nil, nil)
                 return
             }
-            
-            
             
             URLCache.shared.removeAllCachedResponses()
             var urlRequest = URLRequest(url: url)
@@ -194,9 +194,23 @@ public class NetworkingService: ObservableObject {
             let request = AF.request(urlRequest)
             
             request.responseJSON { (data) in
+                if let retryInterval = retryInterval,
+                   request.response?.statusCode != 200 {
+                    NetworkingService.sharedNetworkingQueue.append(.init(request: requestObject, executionTime: retryInterval))
+                }
                 completion(requestObject.urlString, data.data, urlRequest, request.response?.statusCode)
             }
         }
+    
+    static var sharedNetworkingQueue: [QueuedNetworkRequest] = []
+    public func setupTimers(){
+        let allIntervals = QueuedNetworkRequest.ExecutionTime.allCases.compactMap{$0.interval}
+        print("setting up timers for the following items")
+        for interval in allIntervals {
+            print(interval)
+        }
+    }
+    
 }
 
 
@@ -223,5 +237,57 @@ public struct SimpleNetworkRequest: Codable {
         authHeader.mergeDicts(auxiliaryHeaders)
     }
 }
+
+
+public struct QueuedNetworkRequest: Codable {
+    public var request: SimpleNetworkRequest
+    public var executionTime: ExecutionTime
+    
+    public enum ExecutionTime: String, Codable, CaseIterable {
+        case atStart
+        case immediately
+        
+        case q5min
+        case q10min
+        case q15min
+        case q30min
+        case q1h
+        case q2h
+        case q4h
+        case q6h
+        case q12h
+        case q1daily
+        
+        public var interval: Int? {
+            switch self {
+            case .atStart:
+                return nil
+            case .immediately:
+                return nil
+            case .q5min:
+                return 300
+            case .q10min:
+                return 600
+            case .q15min:
+                return 900
+            case .q30min:
+                return 1800
+            case .q1h:
+                return 3600
+            case .q2h:
+                return 7200
+            case .q4h:
+                return 14400
+            case .q6h:
+                return 21600
+            case .q12h:
+                return 43200
+            case .q1daily:
+                return 86400
+            }
+        }
+    }
+}
+
 
 extension HTTPMethod: Codable { }
