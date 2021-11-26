@@ -211,8 +211,8 @@ public class NetworkingService: ObservableObject {
         print("setting up timers for the following items")
         for interval in allIntervals {
             print("setup timer: \(interval)")
-            let timer = Timer.init(
-                timeInterval: Double(interval),
+            let timer = Timer.scheduledTimer(
+                withTimeInterval: Double(interval),
                 repeats: true
             ){ timer in
                 DispatchQueue.main.async{
