@@ -24,7 +24,7 @@ public class NetworkingService: ObservableObject {
     public static let NoNetworkAvailableCode = -100
     public var headerValues: [String:String]
     private var timers: [Timer] = []
-    public var sharedNetworkingQueue: [QueuedNetworkRequest] = []
+    @Published public var sharedNetworkingQueue: [QueuedNetworkRequest] = []
     var queueAction: ((QueuedNetworkRequest) -> ())?
     let monitor = NWPathMonitor()
     @Published var networkAvailable: Bool
