@@ -93,7 +93,7 @@ public extension NetworkingService {
                         guard statusCode == 200 else { return }
                         
                         
-                        _ = self.sharedNetworkingQueue[thisRequestEntry.key]
+                        self.sharedNetworkingQueue[thisRequestEntry.key] = nil
                     }
             }
             
