@@ -24,7 +24,7 @@ public class NetworkingService: ObservableObject {
     public static let NoNetworkAvailableCode = -100
     public var headerValues: [String:String]
     private var timers: [Timer] = []
-    @Published public var sharedNetworkingQueue: [QueuedNetworkRequest] = []
+    @Published public var sharedNetworkingQueue: [UUID:QueuedNetworkRequest] = [:]
     var queueAction: ((QueuedNetworkRequest) -> ())?
     let monitor = NWPathMonitor()
     @Published public var networkAvailable: Bool
@@ -72,7 +72,7 @@ public extension NetworkingService {
                 repeats: true
             ){ timer in
                 DispatchQueue.main.async{
-                    let itemsOnThisInterval = self.sharedNetworkingQueue.filter{$0.executionTime.interval == interval}
+                    let itemsOnThisInterval = self.sharedNetworkingQueue.filter{$0.value.executionTime.interval == interval}
                     self.executeQueuedRequests(interval: interval, requests: itemsOnThisInterval)
                 }
             }
@@ -80,10 +80,10 @@ public extension NetworkingService {
         }
     }
     
-    func executeQueuedRequests(interval: Int, requests: [QueuedNetworkRequest]){
+    func executeQueuedRequests(interval: Int, requests: [UUID:QueuedNetworkRequest]){
         print("Executing items queued on interval of \(interval) - count: \(requests.count)")
-        for queuedRequestEnumeration in requests.enumerated() {
-            let queuedRequest = queuedRequestEnumeration.element
+        for thisRequestEntry in requests {
+            let queuedRequest = thisRequestEntry.value
             if let queueAction = queueAction {
                 queueAction(queuedRequest)
             } else {
@@ -91,7 +91,9 @@ public extension NetworkingService {
                     requestObject: queuedRequest.request,
                     retryInterval: nil) { url, data, request, statusCode in
                         guard statusCode == 200 else { return }
-                        _ = self.sharedNetworkingQueue.remove(at: queuedRequestEnumeration.offset)
+                        
+                        
+                        _ = self.sharedNetworkingQueue[thisRequestEntry.key]
                     }
             }
             
@@ -249,7 +251,7 @@ public extension NetworkingService {
             
             guard networkAvailable else {
                 if let retryInterval = retryInterval {
-                    sharedNetworkingQueue.append(.init(request: requestObject, executionTime: retryInterval))
+                    sharedNetworkingQueue[UUID()] = .init(request: requestObject, executionTime: retryInterval)
                 }
                 completion(requestObject.urlString, nil, nil, NetworkingService.NoNetworkAvailableCode)
                 return
