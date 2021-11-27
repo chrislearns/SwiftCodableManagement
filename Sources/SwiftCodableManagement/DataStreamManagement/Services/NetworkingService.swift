@@ -31,7 +31,7 @@ public class NetworkingService: ObservableObject {
     
     public init(
         headerValues: [String:String] = HeaderValues.contentType_applicationJSONCharsetUTF8.value(),
-        queueAction: ((QueuedNetworkRequest) -> ())?
+        queueAction: ((QueuedNetworkRequest) -> ())? = nil
     ){
         self.headerValues = headerValues
         self.queueAction = queueAction
@@ -82,8 +82,19 @@ public extension NetworkingService {
     
     func executeQueuedRequests(interval: Int, requests: [QueuedNetworkRequest]){
         print("Executing items queued on interval of \(interval) - count: \(requests.count)")
-        for queuedRequest in requests {
-            queueAction?(queuedRequest)
+        for queuedRequestEnumeration in requests.enumerated() {
+            let queuedRequest = queuedRequestEnumeration.element
+            if let queueAction = queueAction {
+                queueAction(queuedRequest)
+            } else {
+                simpleRequest(
+                    requestObject: queuedRequest.request,
+                    retryInterval: nil) { url, data, request, statusCode in
+                        guard statusCode == 200 else { return }
+                        _ = self.sharedNetworkingQueue.remove(at: queuedRequestEnumeration.offset)
+                    }
+            }
+            
         }
     }
 }
