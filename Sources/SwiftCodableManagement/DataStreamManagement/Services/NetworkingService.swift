@@ -20,6 +20,8 @@ public enum HeaderValues{
 }
 
 public class NetworkingService: ObservableObject {
+    
+    public static let NoNetworkAvailableCode = -100
     public var headerValues: [String:String]
     private var timers: [Timer] = []
     public static var sharedNetworkingQueue: [QueuedNetworkRequest] = []
@@ -233,6 +235,7 @@ public extension NetworkingService {
                 if let retryInterval = retryInterval {
                     NetworkingService.sharedNetworkingQueue.append(.init(request: requestObject, executionTime: retryInterval))
                 }
+                completion(requestObject.urlString, nil, nil, NetworkingService.NoNetworkAvailableCode)
                 return
             }
             
