@@ -260,10 +260,6 @@ public extension NetworkingService {
             let request = AF.request(urlRequest)
             
             request.responseJSON { (data) in
-                if let retryInterval = retryInterval,
-                   request.response?.statusCode != 200 {
-                    self.sharedNetworkingQueue.append(.init(request: requestObject, executionTime: retryInterval))
-                }
                 completion(requestObject.urlString, data.data, urlRequest, request.response?.statusCode)
             }
         }
