@@ -27,7 +27,7 @@ public class NetworkingService: ObservableObject {
     @Published public var sharedNetworkingQueue: [QueuedNetworkRequest] = []
     var queueAction: ((QueuedNetworkRequest) -> ())?
     let monitor = NWPathMonitor()
-    @Published var networkAvailable: Bool
+    @Published public var networkAvailable: Bool
     
     public init(
         headerValues: [String:String] = HeaderValues.contentType_applicationJSONCharsetUTF8.value(),
