@@ -24,7 +24,7 @@ public class NetworkingService: ObservableObject {
     public static let NoNetworkAvailableCode = -100
     public var headerValues: [String:String]
     private var timers: [Timer] = []
-    public static var sharedNetworkingQueue: [QueuedNetworkRequest] = []
+    public var sharedNetworkingQueue: [QueuedNetworkRequest] = []
     var queueAction: ((QueuedNetworkRequest) -> ())?
     let monitor = NWPathMonitor()
     @Published var networkAvailable: Bool
@@ -67,7 +67,7 @@ public extension NetworkingService {
                 repeats: true
             ){ timer in
                 DispatchQueue.main.async{
-                    let itemsOnThisInterval = NetworkingService.sharedNetworkingQueue.filter{$0.executionTime.interval == interval}
+                    let itemsOnThisInterval = self.sharedNetworkingQueue.filter{$0.executionTime.interval == interval}
                     self.executeQueuedRequests(interval: interval, requests: itemsOnThisInterval)
                 }
             }
@@ -233,7 +233,7 @@ public extension NetworkingService {
             
             guard networkAvailable else {
                 if let retryInterval = retryInterval {
-                    NetworkingService.sharedNetworkingQueue.append(.init(request: requestObject, executionTime: retryInterval))
+                    sharedNetworkingQueue.append(.init(request: requestObject, executionTime: retryInterval))
                 }
                 completion(requestObject.urlString, nil, nil, NetworkingService.NoNetworkAvailableCode)
                 return
@@ -262,7 +262,7 @@ public extension NetworkingService {
             request.responseJSON { (data) in
                 if let retryInterval = retryInterval,
                    request.response?.statusCode != 200 {
-                    NetworkingService.sharedNetworkingQueue.append(.init(request: requestObject, executionTime: retryInterval))
+                    self.sharedNetworkingQueue.append(.init(request: requestObject, executionTime: retryInterval))
                 }
                 completion(requestObject.urlString, data.data, urlRequest, request.response?.statusCode)
             }
