@@ -41,8 +41,10 @@ public class NetworkingService: ObservableObject {
         
         self.setupTimers()
         self.setupNetworkMonitor()
+        withAnimation {
+            self.networkAvailable = monitor.currentPath.status.isAvailableAsBool
+        }
         
-        self.networkAvailable = monitor.currentPath.status.isAvailableAsBool
     }
 }
 
@@ -52,7 +54,10 @@ public extension NetworkingService {
     public func setupNetworkMonitor(){
         monitor.pathUpdateHandler = { path in
             DispatchQueue.main.async {
-                self.networkAvailable = path.status.isAvailableAsBool
+                withAnimation {
+                    self.networkAvailable = path.status.isAvailableAsBool
+                }
+                
             }
         }
         self.monitor.start(queue: .global())
