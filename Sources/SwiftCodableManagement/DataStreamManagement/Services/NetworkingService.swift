@@ -7,7 +7,7 @@
 
 import SwiftUI
 import Alamofire
-
+import Network
 public enum HeaderValues{
     case contentType_applicationJSONCharsetUTF8
     
@@ -23,23 +23,38 @@ public class NetworkingService: ObservableObject {
     public var headerValues: [String:String]
     private var timers: [Timer] = []
     public static var sharedNetworkingQueue: [QueuedNetworkRequest] = []
-    
     var queueAction: ((QueuedNetworkRequest) -> ())?
+    let monitor = NWPathMonitor()
+    @Published var networkAvailable: Bool
+    
     public init(
         headerValues: [String:String] = HeaderValues.contentType_applicationJSONCharsetUTF8.value(),
         queueAction: ((QueuedNetworkRequest) -> ())?
     ){
         self.headerValues = headerValues
         self.queueAction = queueAction
-        self.setupTimers()
         
+        //Network available is default set to false to populate all properties of class. It will be computed below in the .init()
+        self.networkAvailable = false
+        
+        self.setupTimers()
+        self.setupNetworkMonitor()
+        
+        self.networkAvailable = monitor.currentPath.status.isAvailableAsBool
     }
-    
-    
 }
 
 //MARK: - Queue Related Items
 public extension NetworkingService {
+    
+    public func setupNetworkMonitor(){
+        monitor.pathUpdateHandler = { path in
+            DispatchQueue.main.async {
+                self.networkAvailable = path.status.isAvailableAsBool
+            }
+        }
+        self.monitor.start(queue: .global())
+    }
     public func setupTimers(){
         let allIntervals = QueuedNetworkRequest.ExecutionTime.allCases.compactMap{$0.interval}
         print("setting up timers for the following items")
@@ -213,6 +228,14 @@ public extension NetworkingService {
         requestObject: SimpleNetworkRequest,
         retryInterval: QueuedNetworkRequest.ExecutionTime?,
         completion: @escaping (_ url: String, _ data: Data?, _ request: URLRequest?, _ statusCode: Int?) -> ()){
+            
+            guard networkAvailable else {
+                if let retryInterval = retryInterval {
+                    NetworkingService.sharedNetworkingQueue.append(.init(request: requestObject, executionTime: retryInterval))
+                }
+                return
+            }
+            
             guard let url = URL(string: requestObject.urlString) else {
                 completion(requestObject.urlString, nil, nil, nil)
                 return
@@ -326,3 +349,14 @@ public struct QueuedNetworkRequest: Codable, Hashable {
 
 
 extension HTTPMethod: Codable { }
+
+extension NWPath.Status {
+    var isAvailableAsBool: Bool {
+        switch self {
+        case .satisfied:
+            return true
+        case .requiresConnection, .unsatisfied:
+            return false
+        }
+    }
+}
