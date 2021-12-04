@@ -8,9 +8,14 @@
 import SwiftUI
 
 public class EncodingService:ObservableObject {
-    
-    public init(
-        dateDecodingStrategy:JSONDecoder.DateDecodingStrategy = .iso8601,
+  
+  public static let shared = EncodingService(
+    dateDecodingStrategy: .iso8601withFractionalSeconds,
+    dateEncodingStrategy: .iso8601withFractionalSeconds
+  )
+  
+  public init(
+    dateDecodingStrategy:JSONDecoder.DateDecodingStrategy = .iso8601,
         dataDecodingStrategy:JSONDecoder.DataDecodingStrategy = .base64,
         dateEncodingStrategy:JSONEncoder.DateEncodingStrategy = .iso8601,
         dataEncodingStrategy:JSONEncoder.DataEncodingStrategy = .base64

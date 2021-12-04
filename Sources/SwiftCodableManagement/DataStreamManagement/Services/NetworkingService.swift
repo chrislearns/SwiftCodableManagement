@@ -20,6 +20,8 @@ public enum HeaderValues{
 }
 
 public class NetworkingService: ObservableObject {
+  
+  public static let shared = NetworkingService()
     
     public static let NoNetworkAvailableCode = -100
     public var headerValues: [String:String]
