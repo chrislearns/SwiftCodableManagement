@@ -39,7 +39,7 @@ public class NetworkingService: ObservableObject {
         self.queueAction = queueAction
         
         //Network available is default set to false to populate all properties of class. It will be computed below in the .init()
-        self.networkAvailable = false
+        self.networkAvailable = true
         
         self.setupTimers()
         self.setupNetworkMonitor()
