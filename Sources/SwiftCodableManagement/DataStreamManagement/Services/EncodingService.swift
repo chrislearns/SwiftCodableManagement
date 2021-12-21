@@ -25,7 +25,7 @@ public class EncodingService:ObservableObject {
     encoder.dataEncodingStrategy = dataEncodingStrategy
     encoder.dateEncodingStrategy = dateEncodingStrategy
     
-    let cacheingEncoder = JSONEncoder()
+    let cacheingEncoder = CacheingEncoder()
     encoder.outputFormatting = .prettyPrinted
     encoder.dataEncodingStrategy = dataEncodingStrategy
     encoder.dateEncodingStrategy = dateEncodingStrategy
