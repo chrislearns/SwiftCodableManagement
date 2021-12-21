@@ -7,10 +7,11 @@
 
 import SwiftUI
 
-public class APIURLConstructor{
+public struct APIURLConstructor: Codable, Equatable, Hashable{
     public init(
         root: String,
         constructorPathItems: [String]
+        
     ){
         self.constructorPathItems = constructorPathItems
         self.root = root
@@ -18,8 +19,12 @@ public class APIURLConstructor{
     public var root:String
     public var constructorPathItems:[String]
     
-    public func path(_ itemID:String?) -> String{
-        root + constructorPathItems.map{$0}.joined() + (itemID ?? "")
+  public var path: (absolute: String, relativeToRoot: String){
+    let relative = constructorPathItems.map{$0}.joined()
+        
+    let absolute = root + relative
+    
+    return (absolute, relative)
     }
 }
 

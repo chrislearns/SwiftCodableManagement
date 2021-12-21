@@ -141,21 +141,29 @@ public extension NetworkingService {
   func simpleRequestToObject<T: Codable>(
     type:T.Type,
     requestObject: SimpleNetworkRequest,
+    cacheRequestObject: Bool = false,
     retryInterval: QueuedNetworkRequest.ExecutionTime?,
     encodingService: EncodingService? = nil,
     completion: @escaping (_ obj: T?, _ url: String, _ data: Data?, _ request: URLRequest?, _ statusCode: Int?) -> ()){
       simpleRequest(requestObject: requestObject, retryInterval: retryInterval) { url, data, request, statusCode in
-        guard let unwrappedData = data else {
-          completion(nil, url, data, request, statusCode)
+        let cacheURL = URL(fileURLWithPath: requestObject.urlConstructor.path.relativeToRoot, relativeTo: FileManagementService.cacheDirectory)
+        guard let object = data?.toObject(type: T.self, encodingService: encodingService) else {
+          let cachedItem: T? = FileManagementService.readFile(from: cacheURL)
+          if let _ = cachedItem {
+            print("Fetched cached item as packup: \(type) @ \(requestObject.urlConstructor.path.relativeToRoot)")
+          }
+          completion(cachedItem, url, data, request, statusCode)
           return
         }
         
-        guard let object = unwrappedData.toObject(type: T.self, encodingService: encodingService) else {
-          completion(nil, url, unwrappedData, request, statusCode)
-          return
+        if cacheRequestObject {
+          if object.writeToFile(url: cacheURL) {
+            print("Cached \(type) @ \(requestObject.urlConstructor.path.relativeToRoot)")
+          } else {
+            print("Failed to cache \(type) @ \(requestObject.urlConstructor.path.relativeToRoot)")
+          }
         }
-        
-        completion(object, url, unwrappedData, request, statusCode)
+        completion(object, url, data, request, statusCode)
       }
     }
   
@@ -169,12 +177,12 @@ public extension NetworkingService {
           sharedNetworkingQueue[UUID()] = .init(request: requestObject, executionTime: retryInterval)
           self.saveQueueAndRefresh()
         }
-        completion(requestObject.urlString, nil, nil, NetworkingService.NoNetworkAvailableCode)
+        completion(requestObject.urlConstructor.path.absolute, nil, nil, NetworkingService.NoNetworkAvailableCode)
         return
       }
       
-      guard let url = URL(string: requestObject.urlString) else {
-        completion(requestObject.urlString, nil, nil, nil)
+      guard let url = URL(string: requestObject.urlConstructor.path.absolute) else {
+        completion(requestObject.urlConstructor.path.absolute, nil, nil, nil)
         return
       }
       
@@ -194,26 +202,26 @@ public extension NetworkingService {
       let request = AF.request(urlRequest)
       
       request.responseJSON { (data) in
-        completion(requestObject.urlString, data.data, urlRequest, request.response?.statusCode)
+        completion(requestObject.urlConstructor.path.absolute, data.data, urlRequest, request.response?.statusCode)
       }
     }
 }
 
 public struct SimpleNetworkRequest: Codable, Hashable {
-  public init(urlString: String,
+  public init(urlConstructor: APIURLConstructor,
               httpBody: Data?,
               authHeader: [String : String],
               method: HTTPMethod,
               auxiliaryHeaders: [String : String]
   ) {
-    self.urlString = urlString
+    self.urlConstructor = urlConstructor
     self.httpBody = httpBody
     self.authHeader = authHeader
     self.method = method
     self.auxiliaryHeaders = auxiliaryHeaders
   }
   
-  public var urlString: String
+  public var urlConstructor: APIURLConstructor
   public var httpBody: Data?
   public var authHeader: [String: String]
   public var method: HTTPMethod

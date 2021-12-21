@@ -8,9 +8,9 @@
 import SwiftUI
 
 extension FileManagementService {
-  private static var documentDirectory: URL? = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
+  static var documentDirectory: URL? = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
   
-  private static var cacheDirectory: URL? {
+  static var cacheDirectory: URL? {
     if let url = documentDirectory {
       
       let directory = url
