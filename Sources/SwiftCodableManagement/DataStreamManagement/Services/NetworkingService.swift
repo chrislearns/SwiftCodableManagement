@@ -148,6 +148,15 @@ public extension NetworkingService {
       simpleRequest(requestObject: requestObject, retryInterval: retryInterval) { url, data, request, statusCode in
         let baseURL = FileManagementService.cacheDirectory
         let subfolderURL = FileManagementService.directoryForPathString(baseURL: baseURL, pathString: requestObject.urlConstructor.path.relativeToRoot.pathString)
+        let cacheSuffixURL:URL? = {
+          guard let cachePathSuffix = requestObject.cachePathSuffix else {
+            return subfolderURL
+          }
+
+          return cacheSuffixURL?.appendingPathComponent(cachePathSuffix, isDirectory: true)
+          
+        }()
+        
         let cacheURL = subfolderURL?.appendingPathComponent("object.json", isDirectory: false)
         guard let object = data?.toObject(type: T.self, encodingService: encodingService) else {
           let cachedItem: T? = {
@@ -222,15 +231,18 @@ public struct SimpleNetworkRequest: Codable, Hashable {
               httpBody: Data?,
               authHeader: [String : String],
               method: HTTPMethod,
-              auxiliaryHeaders: [String : String]
+              auxiliaryHeaders: [String : String],
+              cachePathSuffix: String?
   ) {
     self.urlConstructor = urlConstructor
     self.httpBody = httpBody
     self.authHeader = authHeader
     self.method = method
     self.auxiliaryHeaders = auxiliaryHeaders
+    self.cachePathSuffix = cachePathSuffix
   }
   
+  public var cachePathSuffix: String?
   public var urlConstructor: APIURLConstructor
   public var httpBody: Data?
   public var authHeader: [String: String]
