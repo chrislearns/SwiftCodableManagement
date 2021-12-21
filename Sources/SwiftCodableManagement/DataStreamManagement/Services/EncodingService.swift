@@ -40,7 +40,7 @@ public class EncodingService:ObservableObject {
   }
   
   public var encoder: JSONEncoder
-  public var cacheingEncoder: JSONEncoder
+  public var cacheingEncoder: CacheingEncoder
   public var decoder: JSONDecoder
   
   //Example of use: EncodingService.encode(dummyMattUser)
