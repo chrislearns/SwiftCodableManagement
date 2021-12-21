@@ -8,7 +8,10 @@
 import SwiftUI
 
 public class EncodingService:ObservableObject {
-  
+  private static let forLocalContentCache: String = "forLocalContentCache"
+  public static var forLocalContentCacheKey: CodingUserInfoKey? {
+    .init(rawValue: EncodingService.forLocalContentCache)
+  }
   public static let shared = EncodingService(
     dateDecodingStrategy: .iso8601withFractionalSeconds,
     dateEncodingStrategy: .iso8601withFractionalSeconds
@@ -24,11 +27,18 @@ public class EncodingService:ObservableObject {
     encoder.outputFormatting = .prettyPrinted
     encoder.dataEncodingStrategy = dataEncodingStrategy
     encoder.dateEncodingStrategy = dateEncodingStrategy
+    if let forLocalContentCacheKey = EncodingService.forLocalContentCacheKey {
+      encoder.userInfo = [forLocalContentCacheKey: "false"]
+    }
     
-    let cacheingEncoder = CacheingEncoder()
+    
+    let cacheingEncoder = JSONEncoder()
     encoder.outputFormatting = .prettyPrinted
     encoder.dataEncodingStrategy = dataEncodingStrategy
     encoder.dateEncodingStrategy = dateEncodingStrategy
+    if let forLocalContentCacheKey = EncodingService.forLocalContentCacheKey {
+      encoder.userInfo = [forLocalContentCacheKey: "true"]
+    }
     
     let decoder = JSONDecoder()
     decoder.dataDecodingStrategy = dataDecodingStrategy
@@ -40,7 +50,7 @@ public class EncodingService:ObservableObject {
   }
   
   public var encoder: JSONEncoder
-  public var cacheingEncoder: CacheingEncoder
+  public var cacheingEncoder: JSONEncoder
   public var decoder: JSONDecoder
   
   //Example of use: EncodingService.encode(dummyMattUser)
@@ -76,7 +86,4 @@ public class EncodingService:ObservableObject {
     }
     return nil
   }
-}
-
-public class CacheingEncoder: JSONEncoder {
 }
