@@ -153,7 +153,8 @@ public extension NetworkingService {
             return subfolderURL
           }
 
-          return subfolderURL?.appendingPathComponent(cachePathSuffix, isDirectory: true)
+          return FileManagementService.directoryForPathString(baseURL: subfolderURL, pathString: cachePathSuffix)
+          
           
         }()
         
