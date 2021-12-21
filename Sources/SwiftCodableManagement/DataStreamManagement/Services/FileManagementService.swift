@@ -129,6 +129,7 @@ extension Encodable {
       try data.write(to: url)
       return true
     } catch {
+      print(error)
       return false
     }
   }
