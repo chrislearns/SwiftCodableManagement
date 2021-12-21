@@ -9,7 +9,6 @@ import SwiftUI
 
 //This is a convenience protocol that should be adhered to for every struct/class that needs to load from the internet or get cached. It ensures that there is convenience constructor for the CacheName and the APIURL as well as a value for the last time the object was cached
 public protocol GettableByUUID: CacheConstructorReversible{
-    var apiUrlConstructor: APIURLConstructor { get }
     var lastCached:Date? { get set }
     var id: UUID { get set }
     
