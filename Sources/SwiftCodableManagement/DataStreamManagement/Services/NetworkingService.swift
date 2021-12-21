@@ -177,7 +177,7 @@ public extension NetworkingService {
         }
         
         if cacheRequestObject, let cacheURL = cacheURL {
-          if object.writeToFile(url: cacheURL) {
+          if object.writeToFile(url: cacheURL, forLocalContentCache: true) {
             print("Cached \(type) @ \(requestObject.urlConstructor.path.relativeToRoot.pathString)")
           } else {
             print("Failed to cache \(type) @ \(cacheURL)")
