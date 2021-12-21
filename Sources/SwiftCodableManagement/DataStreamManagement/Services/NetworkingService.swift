@@ -147,14 +147,14 @@ public extension NetworkingService {
     completion: @escaping (_ obj: T?, _ url: String, _ data: Data?, _ request: URLRequest?, _ statusCode: Int?) -> ()){
       simpleRequest(requestObject: requestObject, retryInterval: retryInterval) { url, data, request, statusCode in
         let baseURL = FileManagementService.cacheDirectory
-//        let subfolderURL = baseURL?.appendingPathComponent(requestObject.urlConstructor.path.relativeToRoot, isDirectory: true)
-        let cacheURL = baseURL?.appendingPathComponent("object.json", isDirectory: false)
+        let subfolderURL = FileManagementService.directoryForPathString(baseURL: baseURL, pathString: requestObject.urlConstructor.path.relativeToRoot.pathString)
+        let cacheURL = subfolderURL?.appendingPathComponent("object.json", isDirectory: false)
         guard let object = data?.toObject(type: T.self, encodingService: encodingService) else {
           let cachedItem: T? = {
             if let cacheURL = cacheURL {
               let cachedItem: T? = FileManagementService.readFile(from: cacheURL)
               if let _ = cachedItem {
-                print("Fetched cached item as packup: \(type) @ \(requestObject.urlConstructor.path.relativeToRoot)")
+                print("Fetched cached item as packup: \(type) @ \(requestObject.urlConstructor.path.relativeToRoot.pathString)")
               }
               return cachedItem
             } else {
@@ -168,7 +168,7 @@ public extension NetworkingService {
         
         if cacheRequestObject, let cacheURL = cacheURL {
           if object.writeToFile(url: cacheURL) {
-            print("Cached \(type) @ \(requestObject.urlConstructor.path.relativeToRoot)")
+            print("Cached \(type) @ \(requestObject.urlConstructor.path.relativeToRoot.pathString)")
           } else {
             print("Failed to cache \(type) @ \(cacheURL)")
           }

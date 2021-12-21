@@ -45,4 +45,26 @@ extension FileManagementService {
     case requests = "requests.json"
   }
   
+  static func directoryForPathString(baseURL: URL?, pathString: String) -> URL? {
+    
+    if let url = baseURL {
+      
+      let directory = url
+        .appendingPathComponent(pathString, isDirectory: true)
+      
+      if FileManager.default.fileExists(atPath: directory.path, isDirectory: nil) == false {
+        do {
+          try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true, attributes: nil)
+        } catch {
+          return nil
+        }
+      }
+      
+      return directory
+      
+    } else {
+      return nil
+    }
+  }
+  
 }

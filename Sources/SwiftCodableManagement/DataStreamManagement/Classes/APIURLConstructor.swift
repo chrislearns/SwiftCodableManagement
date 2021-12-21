@@ -19,12 +19,16 @@ public struct APIURLConstructor: Codable, Equatable, Hashable{
     public var root:String
     public var constructorPathItems:[String]
     
-  public var path: (absolute: String, relativeToRoot: String){
+  public var path: (
+    absolute: String,
+    relativeToRoot: (
+      pathList:[String],
+      pathString: String
+    )){
     let relative = constructorPathItems.map{$0}.joined()
-        
     let absolute = root + relative
     
-    return (absolute, relative)
+    return (absolute, (constructorPathItems, relative))
     }
 }
 
