@@ -153,11 +153,11 @@ public extension NetworkingService {
             return subfolderURL
           }
 
-          return cacheSuffixURL?.appendingPathComponent(cachePathSuffix, isDirectory: true)
+          return subfolderURL?.appendingPathComponent(cachePathSuffix, isDirectory: true)
           
         }()
         
-        let cacheURL = subfolderURL?.appendingPathComponent("object.json", isDirectory: false)
+        let cacheURL = cacheSuffixURL?.appendingPathComponent("object.json", isDirectory: false)
         guard let object = data?.toObject(type: T.self, encodingService: encodingService) else {
           let cachedItem: T? = {
             if let cacheURL = cacheURL {
