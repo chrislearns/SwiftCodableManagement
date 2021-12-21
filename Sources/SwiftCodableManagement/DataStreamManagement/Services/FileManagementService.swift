@@ -88,6 +88,8 @@ public class FileManagementService: ObservableObject {
         }
         
     }
+  
+  
     
     public static func enumerateFilesInFolder(
         for directory: FileManager.SearchPathDirectory,
@@ -110,3 +112,25 @@ public class FileManagementService: ObservableObject {
         
     }
 }
+
+
+extension FileManagementService {
+  public static func readFile<T: Codable>(from url: URL) -> T? {
+    guard let data = try? Data(contentsOf: url) else { return nil }
+    
+    return EncodingService.shared.decodeData(data, type: T.self)
+  }
+}
+
+extension Encodable {
+  public func writeToFile(url: URL) -> Bool {
+    guard let data = EncodingService.shared.encode(self) else { return false }
+    do {
+      try data.write(to: url)
+      return true
+    } catch {
+      return false
+    }
+  }
+}
+
