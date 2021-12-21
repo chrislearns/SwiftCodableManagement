@@ -24,21 +24,22 @@ public class EncodingService:ObservableObject {
     dataEncodingStrategy:JSONEncoder.DataEncodingStrategy = .base64
   ){
     let encoder = JSONEncoder()
-    encoder.outputFormatting = .prettyPrinted
-    encoder.dataEncodingStrategy = dataEncodingStrategy
-    encoder.dateEncodingStrategy = dateEncodingStrategy
     if let forLocalContentCacheKey = EncodingService.forLocalContentCacheKey {
       encoder.userInfo = [forLocalContentCacheKey: false]
     }
+    encoder.outputFormatting = .prettyPrinted
+    encoder.dataEncodingStrategy = dataEncodingStrategy
+    encoder.dateEncodingStrategy = dateEncodingStrategy
     
     
     let cacheingEncoder = JSONEncoder()
-    cacheingEncoder.outputFormatting = .prettyPrinted
-    cacheingEncoder.dataEncodingStrategy = dataEncodingStrategy
-    cacheingEncoder.dateEncodingStrategy = dateEncodingStrategy
     if let forLocalContentCacheKey = EncodingService.forLocalContentCacheKey {
       cacheingEncoder.userInfo = [forLocalContentCacheKey: true]
     }
+    cacheingEncoder.outputFormatting = .prettyPrinted
+    cacheingEncoder.dataEncodingStrategy = dataEncodingStrategy
+    cacheingEncoder.dateEncodingStrategy = dateEncodingStrategy
+    
     
     let decoder = JSONDecoder()
     decoder.dataDecodingStrategy = dataDecodingStrategy
