@@ -56,7 +56,7 @@ public class NetworkingService: ObservableObject {
 //MARK: - Queue Related Items
 public extension NetworkingService {
   
-  public func setupNetworkMonitor(){
+  func setupNetworkMonitor(){
     monitor.pathUpdateHandler = { path in
       DispatchQueue.main.async {
         withAnimation {
@@ -67,7 +67,7 @@ public extension NetworkingService {
     }
     self.monitor.start(queue: .global())
   }
-  public func setupTimers(){
+  func setupTimers(){
     let allIntervals = QueuedNetworkRequest.ExecutionTime.allCases.compactMap{$0.interval}
     print("setting up timers for the following items")
     for interval in allIntervals {
@@ -104,7 +104,6 @@ public extension NetworkingService {
       
     }
   }
-  
   func saveQueueAndRefresh(){
     if let cacheURL = FileManagementService.cachedRequestsURL {
       
@@ -118,13 +117,12 @@ public extension NetworkingService {
       }
     }
   }
-  
   func saveQueue() -> Bool{
     if let cacheURL = FileManagementService.cachedRequestsURL {
       //This caches the requests and returns a Bool which represents the success of this process.
       return self.sharedNetworkingQueue.writeToFile(url: cacheURL)
     } else {
-    
+      
       return false
     }
   }
@@ -139,127 +137,8 @@ public extension NetworkingService {
 
 //MARK: - Request Related Items
 public extension NetworkingService {
-  public func getFromNetwork<T>(
-    customApiUrlConstructor: APIURLConstructor,
-    type:T.Type,
-    uuid:UUID?,
-    cache:Bool,
-    encodingService: EncodingService?,
-    httpBody: Data?,
-    headerValues: [String:String],
-    method: SCMHTTPMethod,
-    completion: @escaping (T?)->()
-  ) where T: CacheConstructorReversible {
-    print("submitting \(method.rawValue) -- \(type.self) -- \(customApiUrlConstructor.path(uuid?.uuidString))")
-    URLCache.shared.removeAllCachedResponses()
-    var urlRequest = URLRequest(url: URL(string: customApiUrlConstructor.path(uuid?.uuidString))!)
-    let allHeaders = self.headerValues.merging(headerValues) { selfVal, paramVal in
-      paramVal
-    }
-    print("headers = \(allHeaders)")
-    urlRequest.headers = HTTPHeaders(allHeaders)
-    urlRequest.httpBody = httpBody
-    URLCache.shared.removeCachedResponse(for: urlRequest)
-    urlRequest.httpMethod = method.rawValue
-    
-    let request = AF.request(urlRequest)
-    
-    // 2
-    
-    request.responseJSON { (data) in
-      
-      guard let data = data.data else {
-        completion(nil)
-        print("\(method.rawValue) not valid")
-        return
-      }
-      print(String(data: data, encoding: .utf8) ?? "data from rquest could not be unwrapped to string")
-      print("\(method.rawValue) completed")
-      
-      let returnedObject = (encodingService ?? EncodingService()).decodeData(data, type: T.self)
-      completion(returnedObject)
-      
-      //            print("completion handler executed")
-      if cache, let decodedObject = returnedObject {
-        _ = CachingService.saveObjectToCache(object: returnedObject, filenameConstructor: type.cacheNameConstructor(uuid), encodingService: encodingService)
-      }
-    }
-  }
   
-  public static func getFromCache<T:CacheConstructorReversible>(
-    type: T.Type,
-    uuid:UUID?,
-    requiredCacheRecency: CacheRecency,
-    customFilenameConstructor: CacheNameConstructor,
-    encodingService: EncodingService?,
-    completion: @escaping ((object: T, cacheReturn: (metRecencyRequirement: Bool, recency: TimeInterval, cacheDate: Date))?)->()){
-      
-      let cacheNameConstructor = customFilenameConstructor
-      CachingService.retrieveFromCacheToObject(filenameConstructor: cacheNameConstructor, type: T.self, requiredCacheRecency: requiredCacheRecency, encodingService: encodingService){item in
-        guard let item = item else {
-          completion(nil)
-          return
-        }
-        completion(item)
-      }
-    }
-  
-  public func get<T:CacheConstructorReversible>(
-    type: T.Type,
-    uuid:UUID?,
-    desiredCacheRecency: CacheRecency,
-    forceNetworkGrab:Bool,
-    httpBody: Data?,
-    headerValues: [String:String],
-    customFilenameConstructor: CacheNameConstructor,
-    customApiUrlConstructor: APIURLConstructor,
-    encodingService: EncodingService?,
-    method: SCMHTTPMethod = .get,
-    completion: @escaping ((item: T, interval: TimeInterval, cacheDate: Date)?) -> ()){
-      print("static \(method.rawValue) - \(T.self)")
-      NetworkingService.getFromCache(
-        type: type,
-        uuid: uuid,
-        requiredCacheRecency: desiredCacheRecency,
-        customFilenameConstructor: customFilenameConstructor,
-        encodingService: encodingService){cachedObject in
-          //Check if we got a cached object
-          //If we got it make sure it met our desired cache recency
-          if let cachedObject = cachedObject, cachedObject.cacheReturn.metRecencyRequirement, !forceNetworkGrab{
-            completion((cachedObject.object, cachedObject.cacheReturn.recency, cachedObject.cacheReturn.cacheDate))
-          } else {
-            //If our cached object was not present OR it was too old then try to grab something fresh from the network
-            self.getFromNetwork(
-              customApiUrlConstructor: customApiUrlConstructor,
-              type: T.self,
-              uuid: uuid,
-              cache: true,
-              encodingService: encodingService,
-              httpBody: httpBody,
-              headerValues: headerValues,
-              method: method){networkObject in
-                
-                //If the network failed to get us our object then check if we can even use the old backup as a very old backup
-                if let networkObject = networkObject{
-                  //We are here if the network object was present when we asked for it
-                  completion((networkObject, TimeInterval.zero, Date()))
-                } else {
-                  print("could not fetch from network as backup for cache")
-                  //If the cache we are here it means the cached object existed but it failed the first conditional because of its age
-                  if let oldCachedObject = cachedObject {
-                    //Run completion with old object
-                    completion((oldCachedObject.object, oldCachedObject.cacheReturn.recency, oldCachedObject.cacheReturn.cacheDate))
-                  } else {
-                    //Run completion with nil
-                    completion(nil)
-                  }
-                }
-              }
-          }
-        }
-    }
-  
-  public func simpleRequestToObject<T: Codable>(
+  func simpleRequestToObject<T: Codable>(
     type:T.Type,
     requestObject: SimpleNetworkRequest,
     retryInterval: QueuedNetworkRequest.ExecutionTime?,
@@ -280,7 +159,7 @@ public extension NetworkingService {
       }
     }
   
-  public func simpleRequest(
+  func simpleRequest(
     requestObject: SimpleNetworkRequest,
     retryInterval: QueuedNetworkRequest.ExecutionTime?,
     completion: @escaping (_ url: String, _ data: Data?, _ request: URLRequest?, _ statusCode: Int?) -> ()){
@@ -410,6 +289,8 @@ extension NWPath.Status {
     case .satisfied:
       return true
     case .requiresConnection, .unsatisfied:
+      return false
+    @unknown default:
       return false
     }
   }

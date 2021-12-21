@@ -10,7 +10,7 @@ import SweetSimpleSwift
 
 public extension String {
     
-    public func iso8601withFractionalSecondsToDate(encodingService: EncodingService? = nil) throws -> Date {
+    func iso8601withFractionalSecondsToDate(encodingService: EncodingService? = nil) throws -> Date {
         let encodingService = encodingService ?? .init()
         encodingService.encoder.dateEncodingStrategy = .iso8601withFractionalSeconds
         encodingService.decoder.dateDecodingStrategy = .iso8601withFractionalSeconds

@@ -24,32 +24,5 @@ public extension GettableByUUID {
         .init(prefix: Self.cachePrefix, suffix: Self.cacheSuffix, uniqueIdentifier: id.uuidString)
     }
     
-    
-    //    static func getFromNetwork<T:CacheConstructorReversible>(
-    //        type: T.Type,
-    //        uuid:String?,
-    //        customApiUrlConstructor: APIURLConstructor,
-    //        httpBody: Data?,
-    //        headerValues:[String:String],
-    //        method: SCMHTTPMethod = .get,
-    //        encodingService: EncodingService?,
-    //        completion: @escaping (T?) -> ()
-    //    ){
-    //        print("getFromNetwork - static - \(T.self)")
-    //        if let body = httpBody {
-    //            print("BODY: \(String(data: body, encoding: .utf8) ?? "NONE")")
-    //        }
-    //        let endpoint:APIURLConstructor = customApiUrlConstructor
-    //
-    //        NetworkingService.getToObject(endpoint.path(uuid), type: T.self, cache: true, encodingService: encodingService, httpBody: httpBody, headerValues: headerValues, method: method){item in
-    //            guard let item = item else {
-    //                completion(nil)
-    //                return
-    //            }
-    //            completion(item)
-    //        }
-    //    }
-    
-    
 }
 

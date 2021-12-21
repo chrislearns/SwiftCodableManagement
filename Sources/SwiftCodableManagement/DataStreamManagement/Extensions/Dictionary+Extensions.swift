@@ -8,7 +8,7 @@
 import Foundation
 
 public extension Dictionary{
-    public func toJSON(encoder: JSONEncoder) throws -> Data? where Value: Codable, Key == String{
+    func toJSON(encoder: JSONEncoder) throws -> Data? where Value: Codable, Key == String{
         
         let data = try encoder.encode(self)
         return data
@@ -16,13 +16,13 @@ public extension Dictionary{
         
     }
     
-    public func data(encodingService: EncodingService) throws -> Data {
+    func data(encodingService: EncodingService) throws -> Data {
         try JSONSerialization.data(withJSONObject:self)
         
     }
     
     
-    public func mergeDicts(_ dict2: [Key: Value]) -> [Key: Value] {
+    func mergeDicts(_ dict2: [Key: Value]) -> [Key: Value] {
         var result = self
         for (key, value) in dict2 {
             if let resultValue = result[key] {
