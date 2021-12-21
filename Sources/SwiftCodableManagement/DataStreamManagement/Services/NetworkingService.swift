@@ -158,9 +158,9 @@ public extension NetworkingService {
         
         if cacheRequestObject {
           if object.writeToFile(url: cacheURL) {
-            print("Cached \(type) @ \(requestObject.urlConstructor.path.relativeToRoot)")
+            print("Cached \(type) @ \(cacheURL)")
           } else {
-            print("Failed to cache \(type) @ \(requestObject.urlConstructor.path.relativeToRoot)")
+            print("Failed to cache \(type) @ \(cacheURL)")
           }
         }
         completion(object, url, data, request, statusCode)
