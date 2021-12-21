@@ -147,8 +147,8 @@ public extension NetworkingService {
     completion: @escaping (_ obj: T?, _ url: String, _ data: Data?, _ request: URLRequest?, _ statusCode: Int?) -> ()){
       simpleRequest(requestObject: requestObject, retryInterval: retryInterval) { url, data, request, statusCode in
         let baseURL = FileManagementService.cacheDirectory
-        
-        let cacheURL = baseURL?.appendingPathComponent(requestObject.urlConstructor.path.relativeToRoot)
+        let subfolderURL = baseURL?.appendingPathComponent(requestObject.urlConstructor.path.relativeToRoot, isDirectory: true)
+        let cacheURL = subfolderURL?.appendingPathComponent("pbject.json", isDirectory: false)
         guard let object = data?.toObject(type: T.self, encodingService: encodingService) else {
           let cachedItem: T? = {
             if let cacheURL = cacheURL {
