@@ -232,7 +232,7 @@ public struct SimpleNetworkRequest: Codable, Hashable {
               authHeader: [String : String],
               method: HTTPMethod,
               auxiliaryHeaders: [String : String],
-              cachePathSuffix: String?
+              cachePathSuffix: String? = nil
   ) {
     self.urlConstructor = urlConstructor
     self.httpBody = httpBody
