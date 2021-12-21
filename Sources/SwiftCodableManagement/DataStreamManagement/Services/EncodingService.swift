@@ -33,11 +33,11 @@ public class EncodingService:ObservableObject {
     
     
     let cacheingEncoder = JSONEncoder()
-    encoder.outputFormatting = .prettyPrinted
-    encoder.dataEncodingStrategy = dataEncodingStrategy
-    encoder.dateEncodingStrategy = dateEncodingStrategy
+    cacheingEncoder.outputFormatting = .prettyPrinted
+    cacheingEncoder.dataEncodingStrategy = dataEncodingStrategy
+    cacheingEncoder.dateEncodingStrategy = dateEncodingStrategy
     if let forLocalContentCacheKey = EncodingService.forLocalContentCacheKey {
-      encoder.userInfo = [forLocalContentCacheKey: true]
+      cacheingEncoder.userInfo = [forLocalContentCacheKey: true]
     }
     
     let decoder = JSONDecoder()
