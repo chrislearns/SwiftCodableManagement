@@ -28,7 +28,7 @@ public class EncodingService:ObservableObject {
     encoder.dataEncodingStrategy = dataEncodingStrategy
     encoder.dateEncodingStrategy = dateEncodingStrategy
     if let forLocalContentCacheKey = EncodingService.forLocalContentCacheKey {
-      encoder.userInfo = [forLocalContentCacheKey: "false"]
+      encoder.userInfo = [forLocalContentCacheKey: false]
     }
     
     
@@ -37,7 +37,7 @@ public class EncodingService:ObservableObject {
     encoder.dataEncodingStrategy = dataEncodingStrategy
     encoder.dateEncodingStrategy = dateEncodingStrategy
     if let forLocalContentCacheKey = EncodingService.forLocalContentCacheKey {
-      encoder.userInfo = [forLocalContentCacheKey: "true"]
+      encoder.userInfo = [forLocalContentCacheKey: true]
     }
     
     let decoder = JSONDecoder()
