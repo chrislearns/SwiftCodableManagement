@@ -21,6 +21,8 @@ public enum HeaderValues{
 
 public class NetworkingService: ObservableObject {
   
+  public var logTypes: [LogTypes]
+  
   public static let shared = NetworkingService()
   
   public static let NoNetworkAvailableCode = -100
@@ -32,9 +34,11 @@ public class NetworkingService: ObservableObject {
   @Published public var networkAvailable: Bool
   
   public init(
+    logTypes: [LogTypes] = [],
     headerValues: [String:String] = HeaderValues.contentType_applicationJSONCharsetUTF8.value(),
     queueAction: ((QueuedNetworkRequest) -> ())? = nil
   ){
+    self.logTypes = logTypes
     self.headerValues = headerValues
     self.queueAction = queueAction
     
@@ -86,7 +90,9 @@ public extension NetworkingService {
   }
   
   func executeQueuedRequests(interval: Int, requests: [UUID:QueuedNetworkRequest]){
+    if logTypes.contains(.timedEvents) {
     print("Executing items queued on interval of \(interval) - count: \(requests.count)")
+    }
     for thisRequestEntry in requests {
       let queuedRequest = thisRequestEntry.value
       if let queueAction = queueAction {
@@ -325,4 +331,8 @@ extension NWPath.Status {
       return false
     }
   }
+}
+
+public enum LogTypes {
+  case timedEvents
 }
