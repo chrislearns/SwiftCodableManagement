@@ -82,7 +82,7 @@ public class EncodingService:ObservableObject {
       return unwrap
     }
     catch {
-      print(String(decoding: data, as: UTF8.self))
+//      print(String(decoding: data, as: UTF8.self))
       print("failed to decode object -> \(type.self)")
     }
     return nil
