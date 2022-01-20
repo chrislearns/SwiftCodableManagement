@@ -37,7 +37,7 @@ public struct SimpleNetworkRequest: Codable, Hashable {
     authHeader.mergeDicts(auxiliaryHeaders)
   }
   
-  var cacheURL: URL? {
+  public var cacheURL: URL? {
     let baseURL = FileManagementService.cacheDirectory
     let subfolderURL = FileManagementService.directoryForPathString(baseURL: baseURL, pathString: self.urlConstructor.path.relativeToRoot.pathString)
     let cacheSuffixURL:URL? = {
