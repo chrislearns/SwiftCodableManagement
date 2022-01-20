@@ -115,12 +115,20 @@ public class FileManagementService: ObservableObject {
 
 
 extension FileManagementService {
-  public static func readFile<T: Codable>(from url: URL) -> T? {
+  public static func readFileToObject<T: Codable>(from url: URL) -> T? {
     guard let data = try? Data(contentsOf: url) else { return nil }
     
     return EncodingService.shared.decodeData(data, type: T.self)
   }
+  
+  public static func readFileToData(from url: URL) -> Data? {
+    return try? Data(contentsOf: url)
+  }
+  
+  public static func fileCreationDate(atPath url: URL) -> Date? {
+    let attrs = try? FileManager.default.attributesOfItem(atPath: url.absoluteString) as NSDictionary
+    return attrs?.fileCreationDate()
+  }
 }
-
 
 
