@@ -1,0 +1,16 @@
+{
+  "contents": [
+    {
+      "creator":"chrislearns",
+      "package":"SwiftCodableManagement"
+    },
+    {
+      "creator":"chrislearns",
+      "package":"SweetSimpleSwift"
+    },
+    {
+      "creator":"chrislearns",
+      "package":"SweetSimpleFirebase"
+    }
+  ]
+}
