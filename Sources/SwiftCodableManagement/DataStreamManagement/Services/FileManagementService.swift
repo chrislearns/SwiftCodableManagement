@@ -132,7 +132,9 @@ extension FileManagementService {
   
   public static func fileModificationDate(atPath url: URL) -> Date? {
     let attrs = try? FileManager.default.attributesOfItem(atPath: url.path) as NSDictionary
-    return attrs?.fileModificationDate()
+    let date = attrs?.fileModificationDate()
+    print("File at \(url.path) last modified at \(date?.description ?? "nil")")
+    return date
   }
   
 }
