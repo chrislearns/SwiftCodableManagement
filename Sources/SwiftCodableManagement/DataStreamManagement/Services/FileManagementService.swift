@@ -129,6 +129,12 @@ extension FileManagementService {
     let attrs = try? FileManager.default.attributesOfItem(atPath: url.path) as NSDictionary
     return attrs?.fileCreationDate()
   }
+  
+  public static func fileModificationDate(atPath url: URL) -> Date? {
+    let attrs = try? FileManager.default.attributesOfItem(atPath: url.path) as NSDictionary
+    return attrs?.fileModificationDate()
+  }
+  
 }
 
 

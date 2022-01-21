@@ -165,7 +165,7 @@ public extension NetworkingService {
           
           ///Try writing this item to the FileSystem/Cache
           if object.writeToFile(url: cacheURL, forLocalContentCache: true) {
-            let writeTime = FileManagementService.fileCreationDate(atPath: cacheURL)?.description
+            let writeTime = FileManagementService.fileModificationDate(atPath: cacheURL)?.description
             print("Cached \(type) @ \(cacheURL.path) -- Time: \(writeTime ?? "nil")")
           } else {
             print("Failed to cache \(type) @ \(cacheURL.path)")
@@ -195,7 +195,7 @@ public extension NetworkingService {
       ///Lastly we will do the comparison mentioned above to see if it fresh enough. If not, we will move to the guard
       if let preferredCacheDuration = requestObject.preferredCacheDuration,
          let cacheURL = requestObject.cacheURL,
-         let cacheCreationDate = FileManagementService.fileCreationDate(atPath: cacheURL),
+         let cacheCreationDate = FileManagementService.fileModificationDate(atPath: cacheURL),
          Date().timeIntervalSince(cacheCreationDate) <= preferredCacheDuration {
         
         completion(requestObject.urlConstructor.path.absolute, cachedData, nil, NetworkingService.StatusUsingCacheBaseRequestObjectPreference)
