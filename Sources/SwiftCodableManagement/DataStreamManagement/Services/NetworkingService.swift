@@ -158,7 +158,7 @@ public extension NetworkingService {
         ///The cacheURL gets unwrapped
         if shouldCacheReturnValue,
            let statusCode = statusCode,
-           [NetworkingService.StatusUsingFallbackCache,
+           ![NetworkingService.StatusUsingFallbackCache,
             NetworkingService.StatusURLFailedToUnwrap,
             NetworkingService.StatusUsingCacheBaseRequestObjectPreference, NetworkingService.StatusNoNetworkAvailableCode].contains(statusCode),
            let cacheURL = requestObject.cacheURL {
