@@ -165,9 +165,9 @@ public extension NetworkingService {
           
           ///Try writing this item to the FileSystem/Cache
           if object.writeToFile(url: cacheURL, forLocalContentCache: true) {
-            print("Cached \(type) @ \(requestObject.urlConstructor.path.relativeToRoot.pathString)")
+            print("Cached \(type) @ \(cacheURL.path)")
           } else {
-            print("Failed to cache \(type) @ \(cacheURL)")
+            print("Failed to cache \(type) @ \(cacheURL.path)")
           }
         }
         
