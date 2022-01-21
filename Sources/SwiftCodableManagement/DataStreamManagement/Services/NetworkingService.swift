@@ -165,7 +165,8 @@ public extension NetworkingService {
           
           ///Try writing this item to the FileSystem/Cache
           if object.writeToFile(url: cacheURL, forLocalContentCache: true) {
-            print("Cached \(type) @ \(cacheURL.path)")
+            let writeTime = FileManagementService.fileCreationDate(atPath: cacheURL)?.description
+            print("Cached \(type) @ \(cacheURL.path) -- Time: \(writeTime ?? "nil")")
           } else {
             print("Failed to cache \(type) @ \(cacheURL.path)")
           }
