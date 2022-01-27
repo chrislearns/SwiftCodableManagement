@@ -196,7 +196,7 @@ public extension NetworkingService {
       if let preferredCacheDuration = requestObject.preferredCacheDuration,
          let cacheURL = requestObject.cacheURL,
          let cacheModificationDate = FileManagementService.fileModificationDate(atPath: cacheURL),
-         Date().timeIntervalSince(cacheCreationDate) <= preferredCacheDuration {
+         Date().timeIntervalSince(cacheModificationDate) <= preferredCacheDuration {
         
         completion(requestObject.urlConstructor.path.absolute, cachedData, nil, NetworkingService.StatusUsingCacheBaseRequestObjectPreference)
         return

@@ -14,9 +14,9 @@
         "package": "SweetSimpleSwift",
         "repositoryURL": "https://github.com/chrislearns/SweetSimpleSwift.git",
         "state": {
-          "branch": null,
-          "revision": "9213cb2c07c63db474b4a69c430fffb17ccf3a13",
-          "version": "0.1.1"
+          "branch": "main",
+          "revision": "b669fbec31413e25c7c7afcf88bd6f5778d68a9c",
+          "version": null
         }
       }
     ]
