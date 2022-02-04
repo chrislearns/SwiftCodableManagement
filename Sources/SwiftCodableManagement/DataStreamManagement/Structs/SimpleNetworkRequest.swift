@@ -49,4 +49,32 @@ public struct SimpleNetworkRequest: Codable, Hashable {
     
     return cacheSuffixURL?.appendingPathComponent("object.json", isDirectory: false)
   }
+  
+  ///This requires the networking service because the esrvice (on launch) is given header values that this will pul from for context
+  public func toURLRequest(networkingService: NetworkingService) -> URLRequest? {
+    guard let url = URL(string: self.urlConstructor.path.absolute) else {
+      return nil
+    }
+    
+    ///Reaching this point means the URL is valid and you can assemble the URLRequest
+    URLCache.shared.removeAllCachedResponses()
+    
+    var urlRequest = URLRequest(url: url)
+    
+    ///Add request headers
+    let allHeaders = networkingService.headerValues.merging(self.allHeaders) { selfVal, paramVal in
+      paramVal
+    }
+    urlRequest.headers = HTTPHeaders(allHeaders)
+    
+    ///Add requestbody
+    urlRequest.httpBody = self.httpBody
+    
+    ///Remove CachedResponses from URLCache. Note, this has nothing to do with the custom caching mechanism we have created using the FileSystem
+    URLCache.shared.removeCachedResponse(for: urlRequest)
+    
+    ///Set the Request Method (.get, .post, etc.)
+    urlRequest.httpMethod = self.method.rawValue
+    return urlRequest
+  }
 }
