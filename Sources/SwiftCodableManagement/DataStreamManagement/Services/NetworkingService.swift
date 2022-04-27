@@ -156,19 +156,24 @@ public extension NetworkingService {
         ///Unwrap the status code
         ///The status code did not indicate one of our erroneous custom status codes
         ///The cacheURL gets unwrapped
-        if shouldCacheReturnValue,
-           let statusCode = statusCode,
-           ![NetworkingService.StatusUsingFallbackCache,
-            NetworkingService.StatusURLFailedToUnwrap,
-            NetworkingService.StatusUsingCacheBaseRequestObjectPreference, NetworkingService.StatusNoNetworkAvailableCode].contains(statusCode),
-           let cacheURL = requestObject.cacheURL {
-          
-          ///Try writing this item to the FileSystem/Cache
-          if object.writeToFile(url: cacheURL, forLocalContentCache: true) {
-            let writeTime = FileManagementService.fileModificationDate(atPath: cacheURL)?.description
-            print("Cached \(type) @ \(cacheURL.path) -- Time: \(writeTime ?? "nil")")
-          } else {
-            print("Failed to cache \(type) @ \(cacheURL.path)")
+        DispatchQueue.global(qos: .utility).async {
+          if shouldCacheReturnValue,
+             let statusCode = statusCode,
+             ![NetworkingService.StatusUsingFallbackCache,
+               NetworkingService.StatusURLFailedToUnwrap,
+               NetworkingService.StatusUsingCacheBaseRequestObjectPreference, NetworkingService.StatusNoNetworkAvailableCode].contains(statusCode),
+             let cacheURL = requestObject.cacheURL {
+            
+            
+            
+            
+            ///Try writing this item to the FileSystem/Cache
+            if object.writeToFile(url: cacheURL, forLocalContentCache: true) {
+              let writeTime = FileManagementService.fileModificationDate(atPath: cacheURL)?.description
+              print("Cached \(type) @ \(cacheURL.path) -- Time: \(writeTime ?? "nil")")
+            } else {
+              print("Failed to cache \(type) @ \(cacheURL.path)")
+            }
           }
         }
         
