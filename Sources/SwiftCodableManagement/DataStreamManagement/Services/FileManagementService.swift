@@ -19,7 +19,7 @@ public class FileManagementService: ObservableObject {
         subfolder: [SubfolderPaths] = [],
         encodingService: EncodingService?
     ) -> URL? {
-        print("beginning to save \(filename)")
+        SCMGeneralHelper.log("beginning to save \(filename)")
         guard let data = (encodingService ?? EncodingService()).encode(object) else { return nil}
         
         guard let documentDirectoryUrl = FileManager.default.urls(for: directory, in: .userDomainMask).first else { return nil}
@@ -31,10 +31,10 @@ public class FileManagementService: ObservableObject {
         do {
             
             try data.write(to: fileUrl, options: [])
-            print("successfully saved \(filename)")
+            SCMGeneralHelper.log("successfully saved \(filename)")
             return fileUrl
         } catch {
-            print(error)
+            SCMGeneralHelper.log(error)
         }
         return nil
     }
@@ -62,7 +62,7 @@ public class FileManagementService: ObservableObject {
             
             
         } catch {
-            print(error)
+            SCMGeneralHelper.log(error)
             return nil
         }
         
@@ -83,7 +83,7 @@ public class FileManagementService: ObservableObject {
             
             
         } catch {
-            print(error)
+            SCMGeneralHelper.log(error)
             return nil
         }
         
@@ -106,7 +106,7 @@ public class FileManagementService: ObservableObject {
                 try FileManager.default.createDirectory(atPath: subfolder, withIntermediateDirectories: true, attributes: nil)
             }
             catch (let error){
-                print("Failed to create Directory: \(error.localizedDescription)")
+                SCMGeneralHelper.log("Failed to create Directory: \(error.localizedDescription)")
             }
         }
         
@@ -133,7 +133,7 @@ extension FileManagementService {
   public static func fileModificationDate(atPath url: URL) -> Date? {
     let attrs = try? FileManager.default.attributesOfItem(atPath: url.path) as NSDictionary
     let date = attrs?.fileModificationDate()
-    print("File at \(url.path) last modified at \(date?.description ?? "nil")")
+    SCMGeneralHelper.log("File at \(url.path) last modified at \(date?.description ?? "nil")")
     return date
   }
   

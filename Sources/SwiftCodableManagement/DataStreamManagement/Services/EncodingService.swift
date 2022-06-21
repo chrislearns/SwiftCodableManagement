@@ -66,7 +66,7 @@ public class EncodingService:ObservableObject {
       }()
       return encodedObject
     } catch {
-      print("failed to encode")
+      SCMGeneralHelper.log("failed to encode")
     }
     return nil
   }
@@ -82,8 +82,8 @@ public class EncodingService:ObservableObject {
       return unwrap
     }
     catch {
-//      print(String(decoding: data, as: UTF8.self))
-      print("failed to decode object -> \(type.self)")
+//      SCMGeneralHelper.log(String(decoding: data, as: UTF8.self))
+      SCMGeneralHelper.log("failed to decode object -> \(type.self)")
     }
     return nil
   }

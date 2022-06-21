@@ -47,7 +47,7 @@ public class NetworkingService: ObservableObject {
     }
     
     self.refreshQueue()
-    print("Fetched queue from filesystem - \(sharedNetworkingQueue.count) items queued")
+    SCMGeneralHelper.log("Fetched queue from filesystem - \(sharedNetworkingQueue.count) items queued")
     
   }
 }
@@ -68,9 +68,9 @@ public extension NetworkingService {
   }
   func setupTimers(){
     let allIntervals = QueuedNetworkRequest.ExecutionTime.allCases.compactMap{$0.interval}
-    print("setting up timers for the following items")
+    SCMGeneralHelper.log("setting up timers for the following items")
     for interval in allIntervals {
-      print("setup timer: \(interval)")
+      SCMGeneralHelper.log("setup timer: \(interval)")
       let timer = Timer.scheduledTimer(
         withTimeInterval: Double(interval),
         repeats: true
@@ -86,7 +86,7 @@ public extension NetworkingService {
   
   func executeQueuedRequests(interval: Int, requests: [UUID:QueuedNetworkRequest]){
     if logTypes.contains(.timedEvents) {
-    print("Executing items queued on interval of \(interval) - count: \(requests.count)")
+    SCMGeneralHelper.log("Executing items queued on interval of \(interval) - count: \(requests.count)")
     }
     for thisRequestEntry in requests {
       let queuedRequest = thisRequestEntry.value
@@ -170,9 +170,9 @@ public extension NetworkingService {
             ///Try writing this item to the FileSystem/Cache
             if object.writeToFile(url: cacheURL, forLocalContentCache: true) {
               let writeTime = FileManagementService.fileModificationDate(atPath: cacheURL)?.description
-              print("Cached \(type) @ \(cacheURL.path) -- Time: \(writeTime ?? "nil")")
+              SCMGeneralHelper.log("Cached \(type) @ \(cacheURL.path) -- Time: \(writeTime ?? "nil")")
             } else {
-              print("Failed to cache \(type) @ \(cacheURL.path)")
+              SCMGeneralHelper.log("Failed to cache \(type) @ \(cacheURL.path)")
             }
           }
         }
