@@ -47,7 +47,7 @@ public class NetworkingService: ObservableObject {
     }
     
     self.refreshQueue()
-    SCMGeneralHelper.log("Fetched queue from filesystem - \(sharedNetworkingQueue.count) items queued")
+    SCMGeneralHelper.Log.info("Fetched queue from filesystem - \(sharedNetworkingQueue.count) items queued")
     
   }
 }
@@ -68,9 +68,9 @@ public extension NetworkingService {
   }
   func setupTimers(){
     let allIntervals = QueuedNetworkRequest.ExecutionTime.allCases.compactMap{$0.interval}
-    SCMGeneralHelper.log("setting up timers for the following items")
+    SCMGeneralHelper.Log.timedEvent("setting up timers for the following items")
     for interval in allIntervals {
-      SCMGeneralHelper.log("setup timer: \(interval)")
+      SCMGeneralHelper.Log.timedEvent("setup timer: \(interval)")
       let timer = Timer.scheduledTimer(
         withTimeInterval: Double(interval),
         repeats: true
@@ -86,7 +86,7 @@ public extension NetworkingService {
   
   func executeQueuedRequests(interval: Int, requests: [UUID:QueuedNetworkRequest]){
     if logTypes.contains(.timedEvents) {
-      SCMGeneralHelper.log("Executing items queued on interval of \(interval) - count: \(requests.count)")
+      SCMGeneralHelper.Log.info("Executing items queued on interval of \(interval) - count: \(requests.count)")
     }
     for thisRequestEntry in requests {
       let queuedRequest = thisRequestEntry.value
@@ -169,9 +169,9 @@ public extension NetworkingService {
             ///Try writing this item to the FileSystem/Cache
             if object.writeToFile(url: cacheURL, forLocalContentCache: true) {
               let writeTime = FileManagementService.fileModificationDate(atPath: cacheURL)?.description
-              SCMGeneralHelper.log("Cached \(type) @ \(cacheURL.path) -- Time: \(writeTime ?? "nil")")
+              SCMGeneralHelper.Log.info("Cached \(type) @ \(cacheURL.path) -- Time: \(writeTime ?? "nil")")
             } else {
-              SCMGeneralHelper.log("Failed to cache \(type) @ \(cacheURL.path)")
+              SCMGeneralHelper.Log.info("Failed to cache \(type) @ \(cacheURL.path)")
             }
           }
         }
@@ -267,9 +267,7 @@ public extension NetworkingService {
                        cachedData,
                        nil,
                        .UsingPrepopulationCache)
-            if logTypes.contains(.verbose) {
-              SCMGeneralHelper.log("Prepopulating for: \(requestObject.urlConstructor.path.absolute)")
-            }
+            SCMGeneralHelper.Log.verbose("Prepopulating for: \(requestObject.urlConstructor.path.absolute)")
           }
           fetchFreshData()
         }

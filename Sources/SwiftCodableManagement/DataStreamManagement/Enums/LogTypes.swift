@@ -10,4 +10,5 @@ import SwiftUI
 public enum LogTypes {
   case timedEvents
   case verbose
+  case info
 }

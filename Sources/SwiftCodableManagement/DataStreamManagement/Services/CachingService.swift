@@ -44,7 +44,7 @@ public class CachingService: ObservableObject {
             //Try to find the date this cache was created
             if let fileCacheDate = fileAttributes[.modificationDate] as? Date {
                 let timeSinceCache = Date().timeIntervalSince(fileCacheDate)
-                SCMGeneralHelper.log("Time Since Cache -> \(timeSinceCache)")
+                SCMGeneralHelper.Log.info("Time Since Cache -> \(timeSinceCache)")
                 
                 guard let stream = InputStream(url: fileUrl) else {return nil}
                 stream.open()
@@ -59,7 +59,7 @@ public class CachingService: ObservableObject {
                 
                 
                 if timeSinceCache > TimeInterval(requiredCacheRecency.rawValue) {
-                    SCMGeneralHelper.log("cache present but too old \(timeSinceCache) > \(TimeInterval(requiredCacheRecency.rawValue))")
+                    SCMGeneralHelper.Log.info("cache present but too old \(timeSinceCache) > \(TimeInterval(requiredCacheRecency.rawValue))")
                     return (data, (false, timeSinceCache, fileCacheDate))
                 } else {
                     return (data, (true, timeSinceCache, fileCacheDate))
@@ -67,7 +67,7 @@ public class CachingService: ObservableObject {
             }
             return nil
         } catch {
-            SCMGeneralHelper.log(error)
+            SCMGeneralHelper.Log.info(error)
             return nil
         }
         
@@ -91,7 +91,7 @@ public class CachingService: ObservableObject {
         
         if let cachedData = retrieveFromCache(filenameConstructor: filenameConstructor, requiredCacheRecency: requiredCacheRecency){
             
-            SCMGeneralHelper.log("cached data retrieved")
+            SCMGeneralHelper.Log.info("cached data retrieved")
             if let returnedObject = (encodingService ?? EncodingService()).decodeData(cachedData.data, type: T.self){
                 completion((returnedObject, cachedData.cacheReturn))
             } else {
@@ -127,23 +127,23 @@ public class CachingService: ObservableObject {
 //
 
                 }
-            } catch  { SCMGeneralHelper.log(error) }
+            } catch  { SCMGeneralHelper.Log.info(error) }
         } else {
-            SCMGeneralHelper.log("failed to wipe documents directory")
+            SCMGeneralHelper.Log.info("failed to wipe documents directory")
         }
 
     }
     
     public static func saveDataToCache(data:Data, pathConstructor:CacheNameConstructor, completion: (GeneralOutcomes) -> ()){
-        SCMGeneralHelper.log("attempting to cache \(pathConstructor.prefix)")
+        SCMGeneralHelper.Log.info("attempting to cache \(pathConstructor.prefix)")
         guard let cacheURL = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first else { return }
         
         let fileUrl = cacheURL.appendingPathComponent("\(pathConstructor.constructedCacheName)")
         do {
             try data.write(to: fileUrl, options: [])
-            SCMGeneralHelper.log("successfully cached \(pathConstructor.constructedCacheName)")
+            SCMGeneralHelper.Log.info("successfully cached \(pathConstructor.constructedCacheName)")
         } catch {
-            SCMGeneralHelper.log(error)
+            SCMGeneralHelper.Log.info(error)
         }
     }
     

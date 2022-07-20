@@ -14,8 +14,28 @@ class SCMGeneralHelper {
 
 //MARK: LOGGING
 extension SCMGeneralHelper {
-  static func log(_ any: Any?){
+  private static func log(_ any: Any?){
     guard let any = any else { return }
       print("[LOG] 🍣 \(any)")
+  }
+  
+  enum Log {
+    static func timedEvent(_ any: Any?){
+      if NetworkingService.shared.logTypes.contains(.timedEvents){
+        SCMGeneralHelper.Log.info(any)
+      }
+    }
+    static func info(_ any: Any?){
+      if NetworkingService.shared.logTypes.contains(.info){
+        SCMGeneralHelper.Log.info(any)
+      }
+    }
+    
+    static func verbose(_ any: Any?){
+      if NetworkingService.shared.logTypes.contains(.verbose){
+        SCMGeneralHelper.Log.info(any)
+      }
+    }
+    
   }
 }

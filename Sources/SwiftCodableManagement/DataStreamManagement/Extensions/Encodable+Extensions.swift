@@ -14,7 +14,7 @@ extension Encodable {
       try data.write(to: url)
       return true
     } catch {
-      SCMGeneralHelper.log(error)
+      SCMGeneralHelper.Log.info(error)
       return false
     }
   }
