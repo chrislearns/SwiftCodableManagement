@@ -272,9 +272,7 @@ public extension NetworkingService {
 }
 
 //MARK: - Status Code
-extension Int {
-  
-  
+public extension Int {
   static let UsingPrepopulationCache = -6739106739
   static let NoNetworkAvailableCode = -9283615282
   static let URLFailedToUnwrap = -3710235719
