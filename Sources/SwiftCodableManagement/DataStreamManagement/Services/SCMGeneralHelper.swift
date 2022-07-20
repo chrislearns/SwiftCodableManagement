@@ -21,18 +21,18 @@ extension SCMGeneralHelper {
   
   enum Log {
     static func timedEvent(_ any: Any?){
-      if NetworkingService.shared.logTypes.contains(.timedEvents){
+      if NetworkingService.logTypes.contains(.timedEvents){
         SCMGeneralHelper.Log.info(any)
       }
     }
     static func info(_ any: Any?){
-      if NetworkingService.shared.logTypes.contains(.info){
+      if NetworkingService.logTypes.contains(.info){
         SCMGeneralHelper.Log.info(any)
       }
     }
     
     static func verbose(_ any: Any?){
-      if NetworkingService.shared.logTypes.contains(.verbose){
+      if NetworkingService.logTypes.contains(.verbose){
         SCMGeneralHelper.Log.info(any)
       }
     }

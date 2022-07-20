@@ -11,7 +11,7 @@ import Network
 
 public class NetworkingService: ObservableObject {
   
-  public var logTypes: [LogTypes]
+  static var logTypes: [LogTypes] = []
   
   public static let shared = NetworkingService()
   
@@ -33,7 +33,7 @@ public class NetworkingService: ObservableObject {
     headerValues: [String:String] = HeaderValues.contentType_applicationJSONCharsetUTF8.value(),
     queueAction: ((QueuedNetworkRequest) -> ())? = nil
   ){
-    self.logTypes = logTypes
+    NetworkingService.logTypes = logTypes
     self.headerValues = headerValues
     self.queueAction = queueAction
     
@@ -85,9 +85,7 @@ public extension NetworkingService {
   }
   
   func executeQueuedRequests(interval: Int, requests: [UUID:QueuedNetworkRequest]){
-    if logTypes.contains(.timedEvents) {
-      SCMGeneralHelper.Log.info("Executing items queued on interval of \(interval) - count: \(requests.count)")
-    }
+      SCMGeneralHelper.Log.timedEvent("Executing items queued on interval of \(interval) - count: \(requests.count)")
     for thisRequestEntry in requests {
       let queuedRequest = thisRequestEntry.value
       if let queueAction = queueAction {
