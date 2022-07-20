@@ -186,39 +186,7 @@ public extension NetworkingService {
     retryInterval: QueuedNetworkRequest.ExecutionTime?,
     completion: @escaping (_ url: String, _ data: Data?, _ request: URLRequest?, _ statusCode: Int?) -> ()){
       
-      ///No matter what we are going to grab the last cache of this request. Whether or not we use it will be determined
-      let cachedData: Data? = {
-        if let cacheURL = requestObject.cacheURL {
-          return FileManagementService.readFileToData(from: cacheURL)
-        } else {
-          return nil
-        }
-      }()
-      ///If this request would prefer a cached version, then we will use that without pinging the network. A potential use-case here is if you want an item that could have previously been stored and should be pretty stable (think about things like static objects on the server). This can help prevent issues like 429 status codes from the served if we don't expect an item to change too frequently.
-      ///We will also try to unwrap the creationDate value for the file that was cached so we can compare it against our preference for how old of a cache we'd like to consider
-      ///Lastly we will do the comparison mentioned above to see if it fresh enough. If not, we will move to the guard
-      if let preferredCacheDuration = requestObject.preferredCacheDuration,
-         let cacheURL = requestObject.cacheURL {
-         
-        if let cacheModificationDate = FileManagementService.fileModificationDate(atPath: cacheURL),
-           Date().timeIntervalSince(cacheModificationDate) <= preferredCacheDuration {
-          
-          completion(requestObject.urlConstructor.path.absolute,
-                     cachedData,
-                     nil,
-                     .UsingCacheBaseRequestObjectPreference)
-          ///If we return here then we chose to use an old cache that is within a preferred cache duration. This is not expected to continue into the section where an actual network connection is made
-          return
-        } else if requestObject.prepopulateWithCache {
-          completion(requestObject.urlConstructor.path.absolute,
-                     cachedData,
-                     nil,
-                     .UsingPrepopulationCache)
-          if logTypes.contains(.verbose) {
-            SCMGeneralHelper.log("Running completion handler for \(requestObject.urlConstructor.path.absolute) with prepopulation cache")
-          }
-        }
-        
+      func fetchFreshData(){
         ///If we are here then we are looking for fresh data. This can still be reached even if we choose to `prepopulateWithCache` and if that occurs then the completion handler can be expected to run twice - once with the `Int.UsingPrepopulationCache` status code and the cached data, and again with what ever the server returns for the actual network request
         ///Check if the network is available
         guard networkAvailable else {
@@ -266,7 +234,51 @@ public extension NetworkingService {
           ///Run the completion handler with the response of the request
           completion(requestObject.urlConstructor.path.absolute, (data.data ?? cachedData), urlRequest, request.response?.statusCode)
         }
-        
+      }
+      
+      ///No matter what we are going to grab the last cache of this request. Whether or not we use it will be determined
+      let cachedData: Data? = {
+        if let cacheURL = requestObject.cacheURL {
+          return FileManagementService.readFileToData(from: cacheURL)
+        } else {
+          return nil
+        }
+      }()
+      
+      ///If this request would prefer a cached version, then we will use that without pinging the network. A potential use-case here is if you want an item that could have previously been stored and should be pretty stable (think about things like static objects on the server). This can help prevent issues like 429 status codes from the served if we don't expect an item to change too frequently.
+      ///We will also try to unwrap the creationDate value for the file that was cached so we can compare it against our preference for how old of a cache we'd like to consider
+      ///Lastly we will do the comparison mentioned above to see if it is fresh enough. If not, we will move to the guard
+      if let preferredCacheDuration = requestObject.preferredCacheDuration,
+         let cacheURL = requestObject.cacheURL,
+         let cachedData = cachedData {
+         
+        if let cacheModificationDate = FileManagementService.fileModificationDate(atPath: cacheURL),
+           Date().timeIntervalSince(cacheModificationDate) <= preferredCacheDuration {
+          
+          completion(requestObject.urlConstructor.path.absolute,
+                     cachedData,
+                     nil,
+                     .UsingCacheBaseRequestObjectPreference)
+          ///If we return here then we chose to use an old cache that is within a preferred cache duration. This is not expected to continue into the section where an actual network connection is made
+          return
+        } else {
+          if requestObject.prepopulateWithCache {
+            completion(requestObject.urlConstructor.path.absolute,
+                       cachedData,
+                       nil,
+                       .UsingPrepopulationCache)
+            if logTypes.contains(.verbose) {
+              SCMGeneralHelper.log("Running completion handler for \(requestObject.urlConstructor.path.absolute) with prepopulation cache")
+            }
+          }
+          fetchFreshData()
+        }
+      } else {
+        ///We are here because either:
+        ///- There was no preferred cache duration
+        ///- the cacheURL was invalid
+        ///- the cachedData was nil
+        fetchFreshData()
       }
     }
 }
