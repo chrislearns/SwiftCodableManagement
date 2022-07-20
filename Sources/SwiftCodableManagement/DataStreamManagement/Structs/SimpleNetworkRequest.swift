@@ -11,12 +11,14 @@ import Alamofire
 public struct SimpleNetworkRequest: Codable, Hashable {
   public init(urlConstructor: APIURLConstructor,
               preferredCacheDuration: Double? = nil,
+              prepopulateWithCache: Bool = false,
               httpBody: Data?,
               authHeader: [String : String],
               method: HTTPMethod,
               auxiliaryHeaders: [String : String],
               cachePathSuffix: String? = nil
   ) {
+    self.prepopulateWithCache = prepopulateWithCache
     self.preferredCacheDuration = preferredCacheDuration
     self.urlConstructor = urlConstructor
     self.httpBody = httpBody
@@ -25,8 +27,15 @@ public struct SimpleNetworkRequest: Codable, Hashable {
     self.auxiliaryHeaders = auxiliaryHeaders
     self.cachePathSuffix = cachePathSuffix
   }
-  ///If preferredCacheDuration is nil then we will never prefer cached info over fresh info
+  
+  ///`preferredCacheDuration` vs `prepopulateWithCache`
+  ///Using `preferredCacheDuration` will only use the cached info if it fits the time limit  criteria
+  ///Using `prepopulateWithCache` will use the cache if its there regardless of its age, while also fetching new info and running the same completion handler with that info when it returns asynchronously
+  
+  ///If preferredCacheDuration is nil then we will never prefer cached info over fresh info.
   public var preferredCacheDuration: Double?
+  ///If you set this to true then the completion handler will run once using your last cached information (if you have any) and then again when the network comes back with fresh information.
+  public var prepopulateWithCache: Bool
   public var cachePathSuffix: String?
   public var urlConstructor: APIURLConstructor
   public var httpBody: Data?

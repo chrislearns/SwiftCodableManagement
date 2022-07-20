@@ -159,13 +159,12 @@ public extension NetworkingService {
         DispatchQueue.global(qos: .utility).async {
           if shouldCacheReturnValue,
              let statusCode = statusCode,
-             ![NetworkingService.StatusUsingFallbackCache,
-               NetworkingService.StatusURLFailedToUnwrap,
-               NetworkingService.StatusUsingCacheBaseRequestObjectPreference, NetworkingService.StatusNoNetworkAvailableCode].contains(statusCode),
+             ![.UsingPrepopulationCache,
+             .UsingFallbackCache,
+               .URLFailedToUnwrap,
+               .UsingCacheBaseRequestObjectPreference,
+             .NoNetworkAvailableCode].contains(statusCode),
              let cacheURL = requestObject.cacheURL {
-            
-            
-            
             
             ///Try writing this item to the FileSystem/Cache
             if object.writeToFile(url: cacheURL, forLocalContentCache: true) {
@@ -199,15 +198,28 @@ public extension NetworkingService {
       ///We will also try to unwrap the creationDate value for the file that was cached so we can compare it against our preference for how old of a cache we'd like to consider
       ///Lastly we will do the comparison mentioned above to see if it fresh enough. If not, we will move to the guard
       if let preferredCacheDuration = requestObject.preferredCacheDuration,
-         let cacheURL = requestObject.cacheURL,
-         let cacheModificationDate = FileManagementService.fileModificationDate(atPath: cacheURL),
-         Date().timeIntervalSince(cacheModificationDate) <= preferredCacheDuration {
+         let cacheURL = requestObject.cacheURL {
+         
+        if let cacheModificationDate = FileManagementService.fileModificationDate(atPath: cacheURL),
+           Date().timeIntervalSince(cacheModificationDate) <= preferredCacheDuration {
+          
+          completion(requestObject.urlConstructor.path.absolute,
+                     cachedData,
+                     nil,
+                     .UsingCacheBaseRequestObjectPreference)
+          ///If we return here then we chose to use an old cache that is within a preferred cache duration. This is not expected to continue into the section where an actual network connection is made
+          return
+        } else if requestObject.prepopulateWithCache {
+          completion(requestObject.urlConstructor.path.absolute,
+                     cachedData,
+                     nil,
+                     .UsingPrepopulationCache)
+          if logTypes.contains(.verbose) {
+            SCMGeneralHelper.log("Running completion handler for \(requestObject.urlConstructor.path.absolute) with prepopulation cache")
+          }
+        }
         
-        completion(requestObject.urlConstructor.path.absolute, cachedData, nil, NetworkingService.StatusUsingCacheBaseRequestObjectPreference)
-        return
-        
-      } else {
-        
+        ///If we are here then we are looking for fresh data. This can still be reached even if we choose to `prepopulateWithCache` and if that occurs then the completion handler can be expected to run twice - once with the `Int.UsingPrepopulationCache` status code and the cached data, and again with what ever the server returns for the actual network request
         ///Check if the network is available
         guard networkAvailable else {
           
@@ -218,13 +230,13 @@ public extension NetworkingService {
           }
           
           ///Execute the completion handler, notifying the recipient of the URL used and the local/custom status code signifying that no network is available
-          completion(requestObject.urlConstructor.path.absolute, cachedData, nil, NetworkingService.StatusNoNetworkAvailableCode)
+          completion(requestObject.urlConstructor.path.absolute, cachedData, nil, .NoNetworkAvailableCode)
           return
         }
         
         ///Reaching this point means we have a network connection. If so, unwrap the URL. If you fail, once more, notify the recipient/execute the callback with the code designated for URLFailedToUnwrap
         guard let url = URL(string: requestObject.urlConstructor.path.absolute) else {
-          completion(requestObject.urlConstructor.path.absolute, cachedData, nil, NetworkingService.StatusURLFailedToUnwrap)
+          completion(requestObject.urlConstructor.path.absolute, cachedData, nil, .URLFailedToUnwrap)
           return
         }
         
@@ -254,17 +266,18 @@ public extension NetworkingService {
           ///Run the completion handler with the response of the request
           completion(requestObject.urlConstructor.path.absolute, (data.data ?? cachedData), urlRequest, request.response?.statusCode)
         }
+        
       }
     }
 }
 
 //MARK: - Status Code
-public extension NetworkingService {
-  @available(*, unavailable, renamed: "StatusNoNetworkAvailableCode")
-  static let NoNetworkAvailableCode = -9283615282
+extension Int {
   
-  static let StatusNoNetworkAvailableCode = -9283615282
-  static let StatusURLFailedToUnwrap = -3710235719
-  static let StatusUsingFallbackCache = -7355019231
-  static let StatusUsingCacheBaseRequestObjectPreference = -4628701921
+  
+  static let UsingPrepopulationCache = -6739106739
+  static let NoNetworkAvailableCode = -9283615282
+  static let URLFailedToUnwrap = -3710235719
+  static let UsingFallbackCache = -7355019231
+  static let UsingCacheBaseRequestObjectPreference = -4628701921
 }
