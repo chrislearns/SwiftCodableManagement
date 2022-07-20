@@ -268,7 +268,7 @@ public extension NetworkingService {
                        nil,
                        .UsingPrepopulationCache)
             if logTypes.contains(.verbose) {
-              SCMGeneralHelper.log("Running completion handler for \(requestObject.urlConstructor.path.absolute) with prepopulation cache")
+              SCMGeneralHelper.log("Prepopulating for: \(requestObject.urlConstructor.path.absolute)")
             }
           }
           fetchFreshData()

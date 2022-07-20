@@ -16,6 +16,6 @@ class SCMGeneralHelper {
 extension SCMGeneralHelper {
   static func log(_ any: Any?){
     guard let any = any else { return }
-      print("[SCM LOG] 🕸 \(any)")
+      print("[LOG] 🍣 \(any)")
   }
 }
