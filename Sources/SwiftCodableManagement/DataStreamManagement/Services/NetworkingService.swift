@@ -86,7 +86,7 @@ public extension NetworkingService {
   
   func executeQueuedRequests(interval: Int, requests: [UUID:QueuedNetworkRequest]){
     if logTypes.contains(.timedEvents) {
-    SCMGeneralHelper.log("Executing items queued on interval of \(interval) - count: \(requests.count)")
+      SCMGeneralHelper.log("Executing items queued on interval of \(interval) - count: \(requests.count)")
     }
     for thisRequestEntry in requests {
       let queuedRequest = thisRequestEntry.value
@@ -160,10 +160,10 @@ public extension NetworkingService {
           if shouldCacheReturnValue,
              let statusCode = statusCode,
              ![.UsingPrepopulationCache,
-             .UsingFallbackCache,
+               .UsingFallbackCache,
                .URLFailedToUnwrap,
                .UsingCacheBaseRequestObjectPreference,
-             .NoNetworkAvailableCode].contains(statusCode),
+               .NoNetworkAvailableCode].contains(statusCode),
              let cacheURL = requestObject.cacheURL {
             
             ///Try writing this item to the FileSystem/Cache
@@ -248,11 +248,11 @@ public extension NetworkingService {
       ///If this request would prefer a cached version, then we will use that without pinging the network. A potential use-case here is if you want an item that could have previously been stored and should be pretty stable (think about things like static objects on the server). This can help prevent issues like 429 status codes from the served if we don't expect an item to change too frequently.
       ///We will also try to unwrap the creationDate value for the file that was cached so we can compare it against our preference for how old of a cache we'd like to consider
       ///Lastly we will do the comparison mentioned above to see if it is fresh enough. If not, we will move to the guard
-      if let preferredCacheDuration = requestObject.preferredCacheDuration,
-         let cacheURL = requestObject.cacheURL,
-         let cachedData = cachedData {
-         
-        if let cacheModificationDate = FileManagementService.fileModificationDate(atPath: cacheURL),
+      if let cachedData = cachedData {
+        
+        if let preferredCacheDuration = requestObject.preferredCacheDuration,
+           let cacheURL = requestObject.cacheURL,
+           let cacheModificationDate = FileManagementService.fileModificationDate(atPath: cacheURL),
            Date().timeIntervalSince(cacheModificationDate) <= preferredCacheDuration {
           
           completion(requestObject.urlConstructor.path.absolute,
