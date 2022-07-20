@@ -15,6 +15,6 @@ class SCMGeneralHelper {
 //MARK: LOGGING
 extension SCMGeneralHelper {
   static func log(_ any: Any?){
-      print("🕸 \(any as Any)")
+      print("[SCM LOG] 🕸 \(any as Any)")
   }
 }
