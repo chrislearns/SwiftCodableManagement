@@ -11,7 +11,7 @@ import Network
 
 public class NetworkingService: ObservableObject {
   
-  static var logTypes: [LogTypes] = []
+  public static var logTypes: [LogTypes] = []
   
   public static let shared = NetworkingService()
   
