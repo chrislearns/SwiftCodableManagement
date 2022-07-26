@@ -16,6 +16,7 @@ public class NetworkingService: ObservableObject {
   public static let shared = NetworkingService()
   
   public var headerValues: [String:String]
+    public var preprocessResponse: ((HTTPURLResponse?) -> ())? = nil
   
   
   //MARK: - Request Queue
@@ -93,7 +94,7 @@ public extension NetworkingService {
       } else {
         simpleRequest(
           requestObject: queuedRequest.request,
-          retryInterval: nil) { url, data, request, statusCode in
+          retryInterval: nil) { url, data, request, statusCode, response in
             guard statusCode == 200 else { return }
             
             self.sharedNetworkingQueue[thisRequestEntry.key] = nil
@@ -143,9 +144,9 @@ public extension NetworkingService {
     shouldCacheReturnValue: Bool = false,
     retryInterval: QueuedNetworkRequest.ExecutionTime?,
     encodingService: EncodingService? = nil,
-    completion: @escaping (_ obj: T?, _ url: String, _ data: Data?, _ request: URLRequest?, _ statusCode: Int?) -> ()){
+    completion: @escaping (_ obj: T?, _ url: String, _ data: Data?, _ request: URLRequest?, _ statusCode: Int?, _ response: HTTPURLResponse?) -> ()){
       ///Execute the simpleRequest function and try to convert the return to the proper 'type'
-      simpleRequest(requestObject: requestObject, retryInterval: retryInterval) { url, data, request, statusCode in
+      simpleRequest(requestObject: requestObject, retryInterval: retryInterval) { url, data, request, statusCode, response in
         
         ///Decode the data to its proper type
         let object = data?.toObject(type: T.self, encodingService: encodingService)
@@ -174,15 +175,16 @@ public extension NetworkingService {
           }
         }
         
+        self.preprocessResponse?(response)
         ///Move-on to the completion
-        completion(object, url, data, request, statusCode)
+        completion(object, url, data, request, statusCode, response)
       }
     }
   
   func simpleRequest(
     requestObject: SimpleNetworkRequest,
     retryInterval: QueuedNetworkRequest.ExecutionTime?,
-    completion: @escaping (_ url: String, _ data: Data?, _ request: URLRequest?, _ statusCode: Int?) -> ()){
+    completion: @escaping (_ url: String, _ data: Data?, _ request: URLRequest?, _ statusCode: Int?, _ response: HTTPURLResponse?) -> ()){
       
       func fetchFreshData(){
         ///If we are here then we are looking for fresh data. This can still be reached even if we choose to `prepopulateWithCache` and if that occurs then the completion handler can be expected to run twice - once with the `Int.UsingPrepopulationCache` status code and the cached data, and again with what ever the server returns for the actual network request
@@ -196,13 +198,18 @@ public extension NetworkingService {
           }
           
           ///Execute the completion handler, notifying the recipient of the URL used and the local/custom status code signifying that no network is available
-          completion(requestObject.urlConstructor.path.absolute, cachedData, nil, .NoNetworkAvailableCode)
+          completion(requestObject.urlConstructor.path.absolute,
+                     cachedData,
+                     nil,
+                     .NoNetworkAvailableCode,
+                     nil)
           return
         }
         
         ///Reaching this point means we have a network connection. If so, unwrap the URL. If you fail, once more, notify the recipient/execute the callback with the code designated for URLFailedToUnwrap
         guard let url = URL(string: requestObject.urlConstructor.path.absolute) else {
-          completion(requestObject.urlConstructor.path.absolute, cachedData, nil, .URLFailedToUnwrap)
+          completion(requestObject.urlConstructor.path.absolute, cachedData, nil, .URLFailedToUnwrap,
+          nil)
           return
         }
         
@@ -230,7 +237,10 @@ public extension NetworkingService {
         
         request.responseJSON { (data) in
           ///Run the completion handler with the response of the request
-          completion(requestObject.urlConstructor.path.absolute, (data.data ?? cachedData), urlRequest, request.response?.statusCode)
+          completion(requestObject.urlConstructor.path.absolute,
+                     (data.data ?? cachedData),
+                     urlRequest, request.response?.statusCode,
+                     request.response)
         }
       }
       
@@ -256,7 +266,8 @@ public extension NetworkingService {
           completion(requestObject.urlConstructor.path.absolute,
                      cachedData,
                      nil,
-                     .UsingCacheBaseRequestObjectPreference)
+                     .UsingCacheBaseRequestObjectPreference,
+                     nil)
           ///If we return here then we chose to use an old cache that is within a preferred cache duration. This is not expected to continue into the section where an actual network connection is made
           return
         } else {
@@ -264,7 +275,8 @@ public extension NetworkingService {
             completion(requestObject.urlConstructor.path.absolute,
                        cachedData,
                        nil,
-                       .UsingPrepopulationCache)
+                       .UsingPrepopulationCache,
+                       nil)
             SCMGeneralHelper.Log.verbose("Prepopulating for: \(requestObject.urlConstructor.path.absolute)")
           }
           fetchFreshData()
